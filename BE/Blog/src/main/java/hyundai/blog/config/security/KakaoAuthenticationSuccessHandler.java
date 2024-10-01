@@ -46,12 +46,12 @@ public class KakaoAuthenticationSuccessHandler implements AuthenticationSuccessH
 
         response.addCookie(refreshTokenCookie);
 
-        // AccessToken은 클라이언트가 사용할 수 있도록 응답 헤더에 추가
-        response.setHeader("Authorization", "Bearer " + accessToken);
+        // AccessToken은 URL 파라미터로 전달
+        String redirectUrl = "http://127.0.0.1:5500/index.html?accessToken=" + accessToken;
 
         System.out.println(nickname + " / " + profileImage + " / " + email);
 
         // 로그인 성공 후 원하는 페이지로 리다이렉트
-        response.sendRedirect("http://127.0.0.1:5500/index.html");
+        response.sendRedirect(redirectUrl);
     }
 }
