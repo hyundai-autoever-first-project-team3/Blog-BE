@@ -26,4 +26,12 @@ public class Comment {
     private LocalDateTime createdAt;
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
+
+    public void changeContent(String content) {
+        this.content = content;
+    }
+
+    public void changeUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

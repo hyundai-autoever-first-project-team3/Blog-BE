@@ -1,6 +1,7 @@
 package hyundai.blog.comment.service;
 
 import hyundai.blog.comment.dto.CommentCreateRequest;
+import hyundai.blog.comment.dto.CommentUpdateRequest;
 import hyundai.blog.comment.entity.Comment;
 import hyundai.blog.comment.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,17 @@ public class CommentService {
         Comment savedComment = commentRepository.save(comment);
 
         log.info("-------------- {} --------------", savedComment);
+
+        return savedComment;
+    }
+
+    public Comment update(Long id, CommentUpdateRequest request) {
+        Comment comment = commentRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+
+        comment.changeContent(request.getContent());
+        comment.changeUpdatedAt(LocalDateTime.now());
+
+        Comment savedComment = commentRepository.save(comment);
 
         return savedComment;
     }

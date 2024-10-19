@@ -1,13 +1,12 @@
 package hyundai.blog.comment.controller;
 
 import hyundai.blog.comment.dto.CommentCreateRequest;
+import hyundai.blog.comment.dto.CommentUpdateRequest;
 import hyundai.blog.comment.entity.Comment;
 import hyundai.blog.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +26,16 @@ public class CommentController {
 
         // 5)
         return ResponseEntity.ok(savedComment);
+    }
+
+    @PutMapping("/comment/{id}")
+    public ResponseEntity<?> updateComment(
+            @PathVariable Long id,
+            @RequestBody CommentUpdateRequest request
+    ) {
+        Comment updatedComment = commentService.update(id, request);
+
+        return ResponseEntity.ok(updatedComment);
     }
 
 }
