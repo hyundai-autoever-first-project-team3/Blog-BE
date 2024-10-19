@@ -1,10 +1,16 @@
 package hyundai.blog.comment.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "COMMENT")
 public class Comment {
     @Id
