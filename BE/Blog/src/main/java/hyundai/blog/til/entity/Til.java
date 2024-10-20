@@ -1,5 +1,6 @@
 package hyundai.blog.til.entity;
 
+import hyundai.blog.til.dto.TilUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,4 +37,16 @@ public class Til {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public void change(TilUpdateRequest request){
+        this.language = request.getLanguage();
+        this.site = request.getSite();
+        this.algorithm = request.getAlgorithm();
+        this.title = request.getTitle();
+        this.tag = request.getTag();
+        this.link = request.getLink();
+        this.codeContent = request.getCodeContent();
+        this.content = request.getContent();
+        this.updatedAt = LocalDateTime.now();
+    }
 }

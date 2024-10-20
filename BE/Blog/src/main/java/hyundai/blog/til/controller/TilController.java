@@ -1,13 +1,12 @@
 package hyundai.blog.til.controller;
 
 import hyundai.blog.til.dto.TilCreateRequest;
+import hyundai.blog.til.dto.TilUpdateRequest;
 import hyundai.blog.til.entity.Til;
 import hyundai.blog.til.service.TilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,5 +20,16 @@ public class TilController {
         Til savedTil = tilService.save(request);
 
         return ResponseEntity.ok(savedTil);
+    }
+
+    @PutMapping("/til/{id}")
+    public ResponseEntity<?> updateTil(
+            @PathVariable Long id,
+            @RequestBody TilUpdateRequest request
+    ) {
+
+        Til updatedTil = tilService.update(id, request);
+
+        return ResponseEntity.ok(updatedTil);
     }
 }

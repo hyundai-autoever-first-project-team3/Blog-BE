@@ -1,6 +1,7 @@
 package hyundai.blog.til.service;
 
 import hyundai.blog.til.dto.TilCreateRequest;
+import hyundai.blog.til.dto.TilUpdateRequest;
 import hyundai.blog.til.entity.Til;
 import hyundai.blog.til.repository.TilRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,15 @@ public class TilService {
         log.info("--------{}--------");
 
         return savedTil;
+    }
+
+    public Til update(Long id, TilUpdateRequest request) {
+        Til til = tilRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+
+        til.change(request);
+
+        Til updatedTil = tilRepository.save(til);
+
+        return updatedTil;
     }
 }
