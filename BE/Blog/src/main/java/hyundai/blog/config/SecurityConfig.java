@@ -1,7 +1,9 @@
 package hyundai.blog.config;
 
+import hyundai.blog.security.filter.JwtAuthenticationFilter;
 import hyundai.blog.security.handler.LoginSuccessHandler;
 import hyundai.blog.security.service.CustomUserDetailService;
+import hyundai.blog.util.JwtTokenProvider;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -14,9 +16,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailService oAuth2UserService;
     private final LoginSuccessHandler oAuth2SuccessHandler;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterchain(HttpSecurity http) throws Exception {
@@ -57,7 +59,19 @@ public class SecurityConfig {
                     return config;
                 }));
 
-        //
+
+        // 특정 경로는 필터 적용 제외
+        http.authorizeHttpRequests(authz -> authz
+                .requestMatchers("/swagger-ui/index.html", "/api-docs/**", "/swagger-ui/**")
+                .permitAll() // Swagger UI 및 API Docs 경로 허용
+                .anyRequest().authenticated() // 나머지 경로는 인증 필요
+        );
+
+        // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                UsernamePasswordAuthenticationFilter.class);
+
+        // OAuth2 로그인 설정
         http.oauth2Login(oauth ->
                 oauth.userInfoEndpoint(c -> c.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
@@ -65,6 +79,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-
 }
