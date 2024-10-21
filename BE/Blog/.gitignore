@@ -38,3 +38,6 @@ out/
 
 ### applicaion.yaml ###
 application.yaml
+
+### openai.properties ###
+openai.properties
