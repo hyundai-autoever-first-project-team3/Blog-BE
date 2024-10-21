@@ -21,7 +21,7 @@ public class QuestionController {
     private final QuestionService questionService;
 
 
-    @PostMapping("/challenges/{challengeId}/{challengeTilId}")
+    @PostMapping("/challenges/{challengeId}/{challengeTilId}/question")
     public ResponseEntity<?> createQuestion(
             @RequestBody QuestionCreateRequest request,
             @PathVariable Long challengeId,
