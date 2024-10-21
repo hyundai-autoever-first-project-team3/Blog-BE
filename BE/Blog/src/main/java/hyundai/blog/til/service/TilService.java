@@ -23,7 +23,7 @@ public class TilService {
 
     public Til save(TilCreateRequest request) {
         Til til = Til.builder()
-                .userId(request.getUserId())
+                .memberId(request.getMemberId())
                 .language(request.getLanguage())
                 .site(request.getSite())
                 .algorithm(request.getAlgorithm())

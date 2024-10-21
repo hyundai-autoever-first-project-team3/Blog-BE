@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 public class TilGetResponse {
-    private Long userId;
+    private Long memberId;
     private String language;
     private String site;
     private String algorithm;
@@ -21,7 +21,7 @@ public class TilGetResponse {
     private List<Comment> comments;
 
     public TilGetResponse(Til til, List<Comment> comments) {
-        this.userId = til.getUserId();
+        this.memberId = til.getMemberId();
         this.language = til.getLanguage();
         this.site = til.getSite();
         this.algorithm = til.getAlgorithm();
