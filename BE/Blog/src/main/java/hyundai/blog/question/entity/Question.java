@@ -1,5 +1,6 @@
 package hyundai.blog.question.entity;
 
+import hyundai.blog.question.dto.QuestionUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,4 +33,9 @@ public class Question {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public void update(QuestionUpdateRequest request) {
+        this.title = request.title();
+        this.content = request.content();
+        this.updatedAt = LocalDateTime.now();
+    }
 }
