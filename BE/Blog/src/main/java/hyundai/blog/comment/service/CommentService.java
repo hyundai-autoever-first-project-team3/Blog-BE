@@ -19,7 +19,7 @@ public class CommentService {
     public Comment save(CommentCreateRequest request) {
         // 1) dto 를 가지고 entity를 만들어주고
         Comment comment = Comment.builder()
-                .userId(request.getUserId())
+                .memberId(request.getMemberId())
                 .tilId(request.getTilId())
                 .content(request.getContent())
                 .createdAt(LocalDateTime.now())
