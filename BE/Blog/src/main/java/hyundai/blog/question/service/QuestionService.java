@@ -4,6 +4,7 @@ import hyundai.blog.member.exception.MemberIdNotFoundException;
 import hyundai.blog.member.repository.MemberRepository;
 import hyundai.blog.question.dto.QuestionCreateRequest;
 import hyundai.blog.question.dto.QuestionCreateResponse;
+import hyundai.blog.question.dto.QuestionDeleteResponse;
 import hyundai.blog.question.dto.QuestionUpdateRequest;
 import hyundai.blog.question.dto.QuestionUpdateResponse;
 import hyundai.blog.question.entity.Question;
@@ -55,6 +56,15 @@ public class QuestionService {
         question.update(request);
 
         return QuestionCreateResponse.of("question 업데이트 성공!");
+    }
+
+    public QuestionDeleteResponse deleteQuestion(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(QuestionIdNotFoundException::new);
+
+        questionRepository.delete(question);
+
+        return QuestionDeleteResponse.of("question 삭제 성공");
     }
 
 
