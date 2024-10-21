@@ -6,7 +6,11 @@ import hyundai.blog.question.exception.QuestionIdNotFoundException;
 import hyundai.blog.question.repository.QuestionRepository;
 import hyundai.blog.question_comment.dto.QuestionCommentCreateRequest;
 import hyundai.blog.question_comment.dto.QuestionCommentCreateResponse;
+import hyundai.blog.question_comment.dto.QuestionCommentUpdateRequest;
+import hyundai.blog.question_comment.dto.QuestionCommentUpdateResponse;
 import hyundai.blog.question_comment.entity.QuestionComment;
+import hyundai.blog.question_comment.exception.QuestionCommentIdNotFoundException;
+import hyundai.blog.question_comment.exception.QuestionCommentMemberIdValidationException;
 import hyundai.blog.question_comment.repository.QuestionCommentRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +51,24 @@ public class QuestionCommentService {
         return QuestionCommentCreateResponse.of("question comment 생성 완료");
     }
 
+
+    @Transactional
+    public QuestionCommentUpdateResponse updateQuestionComment(
+            Long questionCommentId,
+            QuestionCommentUpdateRequest request) {
+
+        validateMemberIdExists(request.memberId());
+
+        QuestionComment questionComment = questionCommentRepository.findById(questionCommentId)
+                .orElseThrow(QuestionCommentIdNotFoundException::new);
+
+        validateQuestionCommentMemberId(questionComment.getMemberId(), request.memberId());
+
+        questionComment.update(request);
+
+        return QuestionCommentUpdateResponse.of("question comment 수정 완료");
+    }
+
     private void validateQuestionIdExists(Long questionId) {
         if (!questionRepository.existsById(questionId)) {
             throw new QuestionIdNotFoundException();
@@ -58,4 +80,11 @@ public class QuestionCommentService {
             throw new MemberIdNotFoundException();
         }
     }
+
+    private void validateQuestionCommentMemberId(Long questionCommentMemberId, Long memberId) {
+        if (!questionCommentMemberId.equals(memberId)) {
+            throw new QuestionCommentMemberIdValidationException();
+        }
+    }
+
 }

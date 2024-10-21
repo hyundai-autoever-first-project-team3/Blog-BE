@@ -1,5 +1,6 @@
 package hyundai.blog.question_comment.entity;
 
+import hyundai.blog.question_comment.dto.QuestionCommentUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +10,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -16,6 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
 public class QuestionComment {
 
     @Id
@@ -31,4 +34,8 @@ public class QuestionComment {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public void update(QuestionCommentUpdateRequest request) {
+        this.content = request.content();
+        this.updatedAt = LocalDateTime.now();
+    }
 }
