@@ -18,7 +18,7 @@ public record OAuth2UserInfo(
     private static final String KAKAO = "kakao";
     private static final String GITHUB = "github";
 
-    private static final String ADDRESS = "@tilblog.com"; // 도메인으로 변경 예정
+    private static final String ADDRESS = "@codingcare.site"; // 도메인으로 변경 예정
 
 
     public static OAuth2UserInfo of(String registrationId, Map<String, Object> attributes) {
