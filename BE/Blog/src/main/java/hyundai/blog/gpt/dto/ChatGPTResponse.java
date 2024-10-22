@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -19,59 +17,63 @@ public class ChatGPTResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Choice {
-        private int index;
         private Message message;
     }
 
-    public List<ChallengeTilGPTDto> extractCodingTestProblems(){
-
+    public List<ChallengeTilGPTDto> extractCodingTestProblems() {
         List<ChallengeTilGPTDto> results = new ArrayList<>();
 
         for (Choice choice : choices) {
-            String content = choice.getMessage().getContent();  //
+            String content = choice.getMessage().getContent();
+            System.out.println("content : \n " + content + "\n-------");
 
-            // 1) 개행을 기준으로 잘라
+            // 개행을 기준으로 잘라
             String[] lines = content.split("\n");
 
-            Map<String, String> valueMap = new HashMap<>();
+            // 각 문제를 배열로 만듬
+            String[] first = {lines[0].substring(3), lines[1], lines[2]};
+            String[] second = {lines[4].substring(3), lines[5], lines[6]};
+            String[] third = {lines[8].substring(3), lines[9], lines[10]};
 
-            for(int i=0; i<lines.length; i++){
+            List<String[]> parts = new ArrayList<>();
+            parts.add(first);
+            parts.add(second);
+            parts.add(third);
 
+            System.out.println("배열 출력:");
+            System.out.println(Arrays.toString(first));
+            System.out.println(Arrays.toString(second));
+            System.out.println(Arrays.toString(third));
 
-                // 3) values[0] = Link , values[1] = https://naver.com
-                String[] values = lines[i].split(":");
+            for (String[] part : parts) {
+                Map<String, String> valueMap = new HashMap<>();
 
-                // 4) valueMap에 각각 key-value 넣기
-                valueMap.put(values[0], values[1].trim());
+                for (String partValue : part) {
+                    int splitIndex = partValue.indexOf(":");
 
+                    // ':'이 없으면 해당 줄을 건너뜀
+                    if (splitIndex == -1) {
+                        continue;
+                    }
 
+                    String value1 = partValue.substring(0, splitIndex).trim();
+                    String value2 = partValue.substring(splitIndex + 1).trim();
 
+                    valueMap.put(value1, value2);
+                    System.out.println(String.format("value1 : %s , value2 : %s", value1, value2));
+                }
+
+                ChallengeTilGPTDto dto = new ChallengeTilGPTDto();
+                dto.setLevel(valueMap.get("Difficulty"));
+                dto.setSite(valueMap.get("Link"));
+                dto.setTitle(valueMap.get("Title"));
+
+                results.add(dto);
             }
-
-            // key-value를 조회하여 dto 생성
-            ChallengeTilGPTDto dto = new ChallengeTilGPTDto();
-            dto.setLevel(valueMap.get("Difficulty"));
-            dto.setSite(valueMap.get("Link"));
-            dto.setTitle(valueMap.get("Title"));
-
-            results.add(dto);
         }
 
+        System.out.println("추출된 결과 크기 : " + results.size());
         return results;
     }
 
-//    public List<ChallengeGPTDto> extractCodingTestProblems() {
-//        List<ChallengeGPTDto> problems = new ArrayList<>();
-//        for (Choice choice : choices) {
-//            String content = choice.getMessage().getContent();
-//
-//            // 1) 개행을 기준으로 자르고
-//
-//            // 2)
-//
-//            ChallengeGPTDto dto = new ChallengeGPTDto();
-//            dto.setTitle(value);
-//        }
-//        return problems;
-//    }
 }
