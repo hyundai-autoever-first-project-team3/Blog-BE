@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
@@ -72,10 +73,11 @@ public class SecurityConfig {
                 }));
 
         // 특정 경로는 필터 적용 제외
-        http.authorizeHttpRequests(authz -> authz
-                .requestMatchers("/swagger-ui/index.html", "/api-docs/**", "/swagger-ui/**")
-                .permitAll() // Swagger UI 및 API Docs 경로 허용
-                .anyRequest().authenticated() // 나머지 경로는 인증 필요
+        http.authorizeHttpRequests(request ->
+                request.requestMatchers(
+                                new AntPathRequestMatcher("/**")    // 어떤 요청이든 인증
+                        ).permitAll()
+                        .anyRequest().authenticated()
         );
 
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
