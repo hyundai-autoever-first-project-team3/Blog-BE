@@ -7,6 +7,7 @@ import hyundai.blog.like.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,5 +24,14 @@ public class LikeController {
         likeService.save(request);
 
         return ResponseEntity.ok("좋아요 저장");
+    }
+
+    @DeleteMapping("/like")
+    public ResponseEntity<?> deleteLike(
+            @RequestBody LikeCreateRequest request
+    ) {
+        likeService.delete(request);
+        
+        return ResponseEntity.ok("좋아요 삭제");
     }
 }

@@ -8,6 +8,7 @@ import hyundai.blog.member.entity.Member;
 import hyundai.blog.member.repository.MemberRepository;
 import hyundai.blog.til.entity.Til;
 import hyundai.blog.til.repository.TilRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class LikeService {
     private final MemberRepository memberRepository;
     private final TilRepository tilRepository;
 
+    @Transactional
     public void save(LikeCreateRequest request) {
         Optional<Member> member = memberRepository.findById(request.getMemberId());
         Optional<Til> til = tilRepository.findById(request.getTilId());
@@ -31,5 +33,14 @@ public class LikeService {
 
         likeRepository.save(like);
 
+    }
+
+    public void delete(LikeCreateRequest request) {
+        Optional<Member> member = memberRepository.findById(request.getMemberId());
+        Optional<Til> til = tilRepository.findById(request.getTilId());
+
+        Like like = likeRepository.findByMemberAndTil(member.get(), til.get()).orElseThrow();
+
+        likeRepository.delete(like);
     }
 }
