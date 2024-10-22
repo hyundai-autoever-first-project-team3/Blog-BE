@@ -4,13 +4,17 @@ import hyundai.blog.member.dto.MemberDto;
 import hyundai.blog.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,12 +28,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeaderStr = request.getHeader("Authorization");
+        // 1. 쿠키에서 accessToken 찾기
+        Cookie[] cookies = request.getCookies();
+        String accessToken = null;
 
-        // Authorization 헤더가 존재하고, Bearer로 시작하는지 확인
-        if (authHeaderStr != null && authHeaderStr.startsWith("Bearer ")) {
-            String accessToken = authHeaderStr.substring(7);
+        if (cookies != null) {
+            // 쿠키 배열에서 accessToken을 찾음
+            Optional<Cookie> accessTokenCookie = Arrays.stream(cookies)
+                    .filter(cookie -> "accessToken".equals(cookie.getName()))
+                    .findFirst();
 
+            if (accessTokenCookie.isPresent()) {
+                accessToken = accessTokenCookie.get().getValue();
+            }
+        }
+
+        // 2. accessToken이 존재할 때 JWT 검증
+        if (accessToken != null) {
             try {
                 // JWT 검증 및 클레임 추출
                 Map<String, Object> claims = jwtTokenProvider.validateToken(accessToken);
@@ -49,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.error("JWT 검증 오류: {}", e.getMessage());
             }
         } else {
-            log.info("Authorization 헤더가 없습니다.");
+            log.info("accessToken 쿠키가 없습니다.");
         }
 
         // 필터 체인의 다음 필터로 요청을 전달
