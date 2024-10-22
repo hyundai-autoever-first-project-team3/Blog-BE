@@ -6,6 +6,7 @@ import hyundai.blog.question.exception.QuestionIdNotFoundException;
 import hyundai.blog.question.repository.QuestionRepository;
 import hyundai.blog.question_comment.dto.QuestionCommentCreateRequest;
 import hyundai.blog.question_comment.dto.QuestionCommentCreateResponse;
+import hyundai.blog.question_comment.dto.QuestionCommentDeleteResponse;
 import hyundai.blog.question_comment.dto.QuestionCommentUpdateRequest;
 import hyundai.blog.question_comment.dto.QuestionCommentUpdateResponse;
 import hyundai.blog.question_comment.entity.QuestionComment;
@@ -67,6 +68,15 @@ public class QuestionCommentService {
         questionComment.update(request);
 
         return QuestionCommentUpdateResponse.of("question comment 수정 완료");
+    }
+
+    public QuestionCommentDeleteResponse deleteQuestionComment(Long questionCommentId) {
+        QuestionComment questionComment = questionCommentRepository.findById(questionCommentId)
+                .orElseThrow(QuestionCommentIdNotFoundException::new);
+
+        questionCommentRepository.delete(questionComment);
+
+        return QuestionCommentDeleteResponse.of("question comment 삭제 완료");
     }
 
     private void validateQuestionIdExists(Long questionId) {
