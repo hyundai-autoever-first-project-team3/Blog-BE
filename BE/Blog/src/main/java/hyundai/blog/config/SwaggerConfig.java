@@ -22,6 +22,6 @@ public class SwaggerConfig {
                         .title(TITLE)
                         .version(VERSION)
                         .description(DESCRIPTION))
-                .servers(List.of(new Server().url("https://codingcare.site")));  // 서버 URL 설정
+                .servers(List.of(new Server().url("https://codingcare.site/api")));
     }
 }
