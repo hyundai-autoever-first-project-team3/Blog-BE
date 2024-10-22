@@ -9,8 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;  // @Value를 위한 import 추가
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;  // SecurityContextHolder 추가
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -66,7 +67,10 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
 
-        // 6. application.yaml에서 주입받은 redirectUrl 사용
+        // 6. SecurityContext에 Authentication 저장
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 7. application.yaml에서 주입받은 redirectUrl 사용
         response.sendRedirect(redirectUrl);
     }
 }
