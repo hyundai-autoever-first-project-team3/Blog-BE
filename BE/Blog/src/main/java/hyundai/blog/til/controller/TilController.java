@@ -1,6 +1,7 @@
 package hyundai.blog.til.controller;
 
 import hyundai.blog.til.dto.TilCreateRequest;
+import hyundai.blog.til.dto.TilDeleteResponse;
 import hyundai.blog.til.dto.TilGetResponse;
 import hyundai.blog.til.dto.TilUpdateRequest;
 import hyundai.blog.til.entity.Til;
@@ -33,9 +34,11 @@ public class TilController {
         return ResponseEntity.ok(updatedTil);
     }
 
-    @DeleteMapping("/til/{id}")
-    public void deleteTil(@PathVariable Long id) {
-        tilService.delete(id);
+    @DeleteMapping("/tils/{tilId}")
+    public ResponseEntity<?> deleteTil(@PathVariable Long tilId) {
+        TilDeleteResponse response = tilService.delete(tilId);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/til/{id}")

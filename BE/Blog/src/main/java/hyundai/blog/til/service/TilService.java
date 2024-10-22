@@ -5,6 +5,7 @@ import hyundai.blog.comment.repository.CommentRepository;
 import hyundai.blog.like.repository.LikeRepository;
 import hyundai.blog.member.entity.Member;
 import hyundai.blog.til.dto.TilCreateRequest;
+import hyundai.blog.til.dto.TilDeleteResponse;
 import hyundai.blog.til.dto.TilGetResponse;
 import hyundai.blog.til.dto.TilUpdateRequest;
 import hyundai.blog.til.entity.Til;
@@ -80,8 +81,25 @@ public class TilService {
         return updatedTil;
     }
 
-    public void delete(Long id) {
-        tilRepository.deleteById(id);
+    @Transactional
+    public TilDeleteResponse delete(Long tilId) {
+        // 1) 현재 로그인 된 멤버의 ID를 가져온다.
+        Member loggedInMember = memberResolver.getCurrentMember();
+
+        // 2) tilId에 해당하는 til 엔티티를 가져온다.
+        Til til = tilRepository.findById(tilId).orElseThrow(TilIdNotFoundException::new);
+
+        // 3) til 작성자와 로그인한 사용자에 대한 검증
+        validateTilOwnerShip(til, loggedInMember);
+
+        // 4) til entity를 db에서 삭제
+        tilRepository.delete(til);
+
+        // 5) 로그 메세지 출렵 및 리턴 값을 위한 String
+        String message = "til 게시글 삭제 성공";
+        log.info(message);
+
+        return TilDeleteResponse.of(til.getId(), message);
     }
 
     @Transactional
@@ -118,7 +136,7 @@ public class TilService {
         return tilGetResponse;
     }
 
-    private void validateTilOwnerShip(Til til, Member loggedInMember){
+    private void validateTilOwnerShip(Til til, Member loggedInMember) {
         if (!til.getMemberId().equals(loggedInMember.getId())) {
             throw new InvalidTilOwnerException();
         }
