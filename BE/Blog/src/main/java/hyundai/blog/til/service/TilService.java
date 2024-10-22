@@ -8,6 +8,8 @@ import hyundai.blog.til.dto.TilCreateRequest;
 import hyundai.blog.til.dto.TilGetResponse;
 import hyundai.blog.til.dto.TilUpdateRequest;
 import hyundai.blog.til.entity.Til;
+import hyundai.blog.til.exception.InvalidTilOwnerException;
+import hyundai.blog.til.exception.TilIdNotFoundException;
 import hyundai.blog.til.repository.TilRepository;
 import hyundai.blog.util.MemberResolver;
 import jakarta.transaction.Transactional;
@@ -31,7 +33,6 @@ public class TilService {
     public Til save(TilCreateRequest request) {
         // 1) 현재 로그인 된 멤버의 ID를 가져온다.
         Member loggedInMember = memberResolver.getCurrentMember();
-
 
         // 2) til create request & member 로 til entity 생성
         Til til = Til.builder()
@@ -57,12 +58,24 @@ public class TilService {
         return savedTil;
     }
 
-    public Til update(Long id, TilUpdateRequest request) {
-        Til til = tilRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    @Transactional
+    public Til update(Long tilId, TilUpdateRequest request) {
+        // 1) 현재 로그인 된 멤버의 ID를 가져온다.
+        Member loggedInMember = memberResolver.getCurrentMember();
 
+        // 2) tilId에 해당하는 til 엔티티를 가져온다.
+        Til til = tilRepository.findById(tilId).orElseThrow(TilIdNotFoundException::new);
+
+        // 3) til 작성자와 로그인한 사용자에 대한 검증
+        validateTilOwnerShip(til, loggedInMember);
+
+        // 4) til 수정 작업 수행
         til.change(request);
 
+        // 5) til 수정사항 반영
         Til updatedTil = tilRepository.save(til);
+
+        log.info("til 게시글 수정 성공 : {}", updatedTil.toString()); // 정상 생성 확인을 위한 log 출력
 
         return updatedTil;
     }
@@ -103,5 +116,11 @@ public class TilService {
 
         // return dto... 하기!
         return tilGetResponse;
+    }
+
+    private void validateTilOwnerShip(Til til, Member loggedInMember){
+        if (!til.getMemberId().equals(loggedInMember.getId())) {
+            throw new InvalidTilOwnerException();
+        }
     }
 }

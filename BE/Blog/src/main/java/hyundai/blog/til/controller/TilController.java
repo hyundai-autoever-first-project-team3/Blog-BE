@@ -23,13 +23,12 @@ public class TilController {
         return ResponseEntity.ok(savedTil);
     }
 
-    @PutMapping("/til/{id}")
+    @PutMapping("/tils/{tilId}")
     public ResponseEntity<?> updateTil(
-            @PathVariable Long id,
+            @PathVariable Long tilId,
             @RequestBody TilUpdateRequest request
     ) {
-
-        Til updatedTil = tilService.update(id, request);
+        Til updatedTil = tilService.update(tilId, request);
 
         return ResponseEntity.ok(updatedTil);
     }
