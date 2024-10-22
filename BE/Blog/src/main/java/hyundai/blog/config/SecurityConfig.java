@@ -79,8 +79,8 @@ public class SecurityConfig {
         );
 
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+//                UsernamePasswordAuthenticationFilter.class);
 
         // OAuth2 로그인 설정
         http.oauth2Login(oauth ->
