@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class TilCreateRequest {
-    private Long memberId;
     private String language;
     private String site;
     private String algorithm;
@@ -22,5 +21,4 @@ public class TilCreateRequest {
     private String link;
     private String codeContent;
     private String content;
-
 }

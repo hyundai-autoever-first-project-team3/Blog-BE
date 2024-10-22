@@ -1,6 +1,7 @@
 package hyundai.blog.til.controller;
 
 import hyundai.blog.til.dto.TilCreateRequest;
+import hyundai.blog.til.dto.TilDeleteResponse;
 import hyundai.blog.til.dto.TilGetResponse;
 import hyundai.blog.til.dto.TilUpdateRequest;
 import hyundai.blog.til.entity.Til;
@@ -23,25 +24,26 @@ public class TilController {
         return ResponseEntity.ok(savedTil);
     }
 
-    @PutMapping("/til/{id}")
+    @PutMapping("/tils/{tilId}")
     public ResponseEntity<?> updateTil(
-            @PathVariable Long id,
+            @PathVariable Long tilId,
             @RequestBody TilUpdateRequest request
     ) {
-
-        Til updatedTil = tilService.update(id, request);
+        Til updatedTil = tilService.update(tilId, request);
 
         return ResponseEntity.ok(updatedTil);
     }
 
-    @DeleteMapping("/til/{id}")
-    public void deleteTil(@PathVariable Long id) {
-        tilService.delete(id);
+    @DeleteMapping("/tils/{tilId}")
+    public ResponseEntity<?> deleteTil(@PathVariable Long tilId) {
+        TilDeleteResponse response = tilService.delete(tilId);
+
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/til/{id}")
-    public ResponseEntity<?> getTil(@PathVariable Long id) {
-        TilGetResponse tilGetResponse = tilService.get(id);
+    @GetMapping("/tils/{tilId}")
+    public ResponseEntity<?> getTil(@PathVariable Long tilId) {
+        TilGetResponse tilGetResponse = tilService.get(tilId);
 
         return ResponseEntity.ok(tilGetResponse);
     }
