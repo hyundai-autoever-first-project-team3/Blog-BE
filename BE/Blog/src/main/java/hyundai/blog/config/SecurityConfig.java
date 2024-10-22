@@ -48,7 +48,7 @@ public class SecurityConfig {
                     config.setAllowedOrigins(List.of(
                             "*",  // 모든 도메인 허용
                             "http://localhost:3000",  // 로컬 개발 환경에서의 요청 허용
-                            "https://codingcare.site",  // 배포된 서버의 도메인 추가
+                            "https://codingcare.site"  // 배포된 서버의 도메인 추가
                     ));
 
                     // 허용할 HTTP 메서드 설정
