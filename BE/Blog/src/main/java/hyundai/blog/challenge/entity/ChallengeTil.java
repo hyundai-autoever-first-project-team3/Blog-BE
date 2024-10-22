@@ -23,6 +23,9 @@ public class ChallengeTil {
     private Long challengeId;
     private String title;
     private String site;
+
+    @Column(name = "site_kinds")
+    private String siteKinds;
     private String level;
     @Column(name = "created_at")
     private LocalDateTime createdAt;

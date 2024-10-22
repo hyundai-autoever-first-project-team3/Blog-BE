@@ -40,7 +40,6 @@ public class ChallengeService {
 
     @Transactional
     public void createChallenge() {
-
         // 1) 알고리즘 DB에서 오래된 순으로 정렬 후, 제일 오래된 값을 가져온다.
         Algorithm algorithm = algorithmRepository.findFirstByOrderByUsedAtAsc();
 
@@ -80,6 +79,7 @@ public class ChallengeService {
                     .challengeId(savedChallenge.getId())
                     .level(problem.getLevel())
                     .site(problem.getSite())
+                    .siteKinds(problem.getSiteKinds())
                     .createdAt(LocalDateTime.now())
                     .build();
 
@@ -87,6 +87,12 @@ public class ChallengeService {
             challengeTilRepository.save(challengeTil);
         }
 
+    }
+
+    public List<ChallengeTil> getChallengeTils(Long id) {
+        List<ChallengeTil> getChallengeTils = challengeTilRepository.findAllByChallengeId(id);
+
+        return getChallengeTils;
     }
 
 }
