@@ -60,16 +60,16 @@ public class SecurityConfig {
                 }));
 
 
-        // 특정 경로는 필터 적용 제외
-        http.authorizeHttpRequests(authz -> authz
-                .requestMatchers("/swagger-ui/index.html", "/api-docs/**", "/swagger-ui/**")
-                .permitAll() // Swagger UI 및 API Docs 경로 허용
-                .anyRequest().authenticated() // 나머지 경로는 인증 필요
-        );
-
-        // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                UsernamePasswordAuthenticationFilter.class);
+//        // 특정 경로는 필터 적용 제외
+//        http.authorizeHttpRequests(authz -> authz
+//                .requestMatchers("/swagger-ui/index.html", "/api-docs/**", "/swagger-ui/**")
+//                .permitAll() // Swagger UI 및 API Docs 경로 허용
+//                .anyRequest().authenticated() // 나머지 경로는 인증 필요
+//        );
+//
+//        // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
+//        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+//                UsernamePasswordAuthenticationFilter.class);
 
         // OAuth2 로그인 설정
         http.oauth2Login(oauth ->
