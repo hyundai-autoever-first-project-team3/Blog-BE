@@ -103,32 +103,29 @@ public class TilService {
     }
 
     @Transactional
-    public TilGetResponse get(Long id) {
-        // tilID로 til 객체 가져오기
+    public TilGetResponse get(Long tilId) {
+        // 1) 현재 로그인 된 멤버의 ID를 가져온다.
+        Member loggedInMember = memberResolver.getCurrentMember();
 
-        Til til = tilRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        // 2) tilId에 해당하는 til 엔티티를 가져온다.
+        Til til = tilRepository.findById(tilId).orElseThrow(TilIdNotFoundException::new);
 
-        // tilId에 해당하는 comment들 list로 가져오기
-        List<Comment> comments = commentRepository.findAllByTilId(id);
+        // 3) tilId에 해당하는 comment들 list로 가져오기
+        List<Comment> comments = commentRepository.findAllByTilId(tilId);
 
-        // tilId에 해당하는 like의 개수를 count 하고 변수에 저장
-        Long countLikes = likeRepository.countByTilId(id);
+        // 4) tilId에 해당하는 like의 개수를 count 하고 변수에 저장
+        Long countLikes = likeRepository.countByTilId(tilId);
 
-        // memberId와 tilId에 해당하는 like가 존재하면 isLiked를 true로 설정
-        // 존재하지 않으면 false로 설정
+        /*
+        5) isLiked 값 설정
+        memberId와 tilId에 해당하는 like가 존재하면 isLiked를 true로 설정
+        존재하지 않으면 false로 설정
 
-        boolean isLiked;
+        로그인 된 내 memberId와 해당 tilId가 LikeRepository에 존재하면 isLiked는 true 없으면 false
+        */
+        boolean isLiked = likeRepository.existsByMemberIdAndTilId(loggedInMember.getId(), tilId);
 
-        // 로그인 된 사용자 정보에서 memberId를 가져오기
-        Long memberId = 2L;
-
-        //로그인 된 내 memberId와 해당 tilId가 LikeRepository에 존재하면 isLiked는 true 없으면 false
-        if (likeRepository.findByMemberIdAndTilId(memberId, id).isPresent()) {
-            isLiked = true;
-        } else {
-            isLiked = false;
-        }
-
+        // 6) 각각의 entity 및 dto를 바탕으로 getResponse Dto 생성
         // til + comment(list) + countLikes + isLiked 를 합쳐서 dto 만들기
         TilGetResponse tilGetResponse = new TilGetResponse(til, comments, countLikes, isLiked);
 

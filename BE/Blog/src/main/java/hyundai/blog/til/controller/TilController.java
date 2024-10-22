@@ -41,9 +41,9 @@ public class TilController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/til/{id}")
-    public ResponseEntity<?> getTil(@PathVariable Long id) {
-        TilGetResponse tilGetResponse = tilService.get(id);
+    @GetMapping("/tils/{tilId}")
+    public ResponseEntity<?> getTil(@PathVariable Long tilId) {
+        TilGetResponse tilGetResponse = tilService.get(tilId);
 
         return ResponseEntity.ok(tilGetResponse);
     }
