@@ -35,6 +35,7 @@ public class LikeService {
 
     }
 
+    @Transactional
     public void delete(LikeCreateRequest request) {
         Optional<Member> member = memberRepository.findById(request.getMemberId());
         Optional<Til> til = tilRepository.findById(request.getTilId());
