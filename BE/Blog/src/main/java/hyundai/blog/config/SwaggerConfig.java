@@ -18,6 +18,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title(TITLE)
                         .version(VERSION)
+                        .servers(List.of(new Server().url("https://codingcare.site")));
                         .description(DESCRIPTION));
     }
 }

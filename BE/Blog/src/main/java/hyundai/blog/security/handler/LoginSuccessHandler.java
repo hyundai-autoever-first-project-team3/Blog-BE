@@ -49,11 +49,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh-Token", refreshToken);
 
-        // 5. 사용자 정보 응답 바디에 포함 (선택 사항)
-        response.setContentType("application/json");
-        response.getWriter().write(String.format("{\"accessToken\": \"%s\", \"refreshToken\": \"%s\", \"email\": \"%s\", \"name\": \"%s\", \"profileImage\": \"%s\", \"social\": \"%s\", \"role\": \"%s\"}",
-                accessToken, refreshToken, userInfo.email(), userInfo.name(), userInfo.profileImage(), userInfo.social(), userInfo.role()));
+//        // 5. 사용자 정보 응답 바디에 포함 (선택 사항)
+//        response.setContentType("application/json");
+//        response.getWriter().write(String.format("{\"accessToken\": \"%s\", \"refreshToken\": \"%s\", \"email\": \"%s\", \"name\": \"%s\", \"profileImage\": \"%s\", \"social\": \"%s\", \"role\": \"%s\"}",
+//                accessToken, refreshToken, userInfo.email(), userInfo.name(), userInfo.profileImage(), userInfo.social(), userInfo.role()));
 
-        response.getWriter().flush();
+        // 5. 사용자 정보 및 토큰을 포함한 리다이렉트
+        String redirectUrl = "/";
+
+        response.sendRedirect(redirectUrl);
     }
 }

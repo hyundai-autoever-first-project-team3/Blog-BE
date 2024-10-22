@@ -44,21 +44,32 @@ public class SecurityConfig {
                 request -> {
                     CorsConfiguration config = new CorsConfiguration();
 
+                    // 허용할 출처 설정 (모든 출처를 허용하거나 특정 도메인 추가)
                     config.setAllowedOrigins(List.of(
-                            "*",
-                            "http://localhost:5173"
+                            "*",  // 모든 도메인 허용
+                            "http://localhost:3000",  // 로컬 개발 환경에서의 요청 허용
+                            "https://codingcare.site",  // 배포된 서버의 도메인 추가
                     ));
+
+                    // 허용할 HTTP 메서드 설정
                     config.setAllowedMethods(
                             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+
+                    // 쿠키와 자격 증명 사용을 허용
                     config.setAllowCredentials(true);
+
+                    // 허용할 헤더 설정 (모든 헤더 허용)
                     config.setAllowedHeaders(Collections.singletonList("*"));
+
+                    // 클라이언트에서 접근 가능한 헤더 설정
                     config.setExposedHeaders(
                             Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+
+                    // 프리플라이트 요청의 캐싱 시간 설정 (1시간)
                     config.setMaxAge(60 * 60L);
 
                     return config;
                 }));
-
 
 //        // 특정 경로는 필터 적용 제외
 //        http.authorizeHttpRequests(authz -> authz
