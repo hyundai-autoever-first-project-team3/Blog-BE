@@ -51,16 +51,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
                 "role", userInfo.role()
         );
 
-        MemberDto memberDto = new MemberDto(claims);
-
-        // 인증 토큰 생성 및 SecurityContext 설정
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                memberDto, "", memberDto.getAuthorities());
-
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-        log.info("유저 액세스 성공 userName : {}", memberDto.getUsername());
-
         String accessToken = jwtTokenProvider.generateAccessToken(claims);
         String refreshToken = jwtTokenProvider.createRefreshToken();
 
@@ -82,7 +72,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(refreshTokenCookie);
 
 
-        // 7. application.yaml에서 주입받은 redirectUrl 사용
+        // 6. application.yaml에서 주입받은 redirectUrl 사용
         response.sendRedirect(redirectUrl);
     }
 }
