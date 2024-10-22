@@ -31,9 +31,9 @@ public class ChatGPTResponse {
             String[] lines = content.split("\n");
 
             // 각 문제를 배열로 만듬
-            String[] first = {lines[0].substring(3), lines[1], lines[2]};
-            String[] second = {lines[4].substring(3), lines[5], lines[6]};
-            String[] third = {lines[8].substring(3), lines[9], lines[10]};
+            String[] first = {lines[0].substring(3), lines[1], lines[2], lines[3]};
+            String[] second = {lines[5].substring(3), lines[6], lines[7], lines[8]};
+            String[] third = {lines[10].substring(3), lines[11], lines[12], lines[13]};
 
             List<String[]> parts = new ArrayList<>();
             parts.add(first);
@@ -66,7 +66,9 @@ public class ChatGPTResponse {
                 ChallengeTilGPTDto dto = new ChallengeTilGPTDto();
                 dto.setLevel(valueMap.get("Difficulty"));
                 dto.setSite(valueMap.get("Link"));
+                dto.setSiteKinds(valueMap.get("Kind"));
                 dto.setTitle(valueMap.get("Title"));
+
 
                 results.add(dto);
             }
