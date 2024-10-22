@@ -20,6 +20,8 @@ public class TilGetResponse {
 
     private List<Comment> comments;
 
+
+
     public TilGetResponse(Til til, List<Comment> comments) {
         this.memberId = til.getMemberId();
         this.language = til.getLanguage();
@@ -32,4 +34,6 @@ public class TilGetResponse {
         this.content = til.getContent();
         this.comments = comments;
     }
+
+
 }
