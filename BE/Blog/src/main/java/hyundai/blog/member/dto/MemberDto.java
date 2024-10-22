@@ -23,12 +23,16 @@ public class MemberDto extends User {
     // JWT Claims로부터 MemberDto 생성
     public MemberDto(Map<String, Object> claims) {
         super((String) claims.get("email"), "", mapToGrantedAuthorities((String) claims.get("role")));
+
+        String roleString = (String) claims.get("role");
+        MemberRole role = MemberRole.valueOf(roleString);  // String을 Enum으로 변환
+
         this.email = (String) claims.get("email");
         this.name = (String) claims.get("name");
         this.profileImage = (String) claims.get("profileImage");
         this.nickname = (String) claims.get("name");  // JWT에서 별도의 닉네임 필드가 없으므로 name을 사용
         this.social = (String) claims.get("social");
-        this.memberRoleList = List.of(MemberRole.valueOf((String) claims.get("role")));
+        this.memberRoleList = List.of(role);  // MemberRole 리스트로 저장
     }
 
     // role을 GrantedAuthority로 변환하는 메소드
