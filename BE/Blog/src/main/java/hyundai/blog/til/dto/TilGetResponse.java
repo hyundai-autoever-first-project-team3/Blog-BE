@@ -17,12 +17,12 @@ public class TilGetResponse {
     private String link;
     private String codeContent;
     private String content;
+    private boolean isLiked;
+    private Long likeCounts;
 
     private List<Comment> comments;
 
-
-
-    public TilGetResponse(Til til, List<Comment> comments) {
+    public TilGetResponse(Til til, List<Comment> comments, Long likeCounts, boolean isLiked) {
         this.memberId = til.getMemberId();
         this.language = til.getLanguage();
         this.site = til.getSite();
@@ -33,6 +33,8 @@ public class TilGetResponse {
         this.codeContent = til.getCodeContent();
         this.content = til.getContent();
         this.comments = comments;
+        this.isLiked = isLiked;
+        this.likeCounts = likeCounts;
     }
 
 
