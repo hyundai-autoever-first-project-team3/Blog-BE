@@ -1,5 +1,6 @@
 package hyundai.blog.security.handler;
 
+import hyundai.blog.member.dto.MemberDto;
 import hyundai.blog.security.entity.OAuth2UserInfo;
 import hyundai.blog.util.JwtTokenProvider;
 import jakarta.servlet.ServletException;
@@ -9,8 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;  // @Value를 위한 import 추가
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;  // SecurityContextHolder 추가
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -65,6 +70,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         // 5. 응답에 쿠키 추가
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
+
 
         // 6. application.yaml에서 주입받은 redirectUrl 사용
         response.sendRedirect(redirectUrl);
