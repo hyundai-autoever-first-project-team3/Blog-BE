@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface TilRepository extends JpaRepository<Til, Long> {
 
     Page<Til> findAll(Pageable pageable);
+
+    Page<Til> findAllByMemberId(Long memberId, Pageable pageable);
 }
