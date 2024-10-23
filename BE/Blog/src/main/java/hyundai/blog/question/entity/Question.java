@@ -10,8 +10,10 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "QUESTION")
 @NoArgsConstructor
@@ -38,4 +40,5 @@ public class Question {
         this.content = request.content();
         this.updatedAt = LocalDateTime.now();
     }
+
 }

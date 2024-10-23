@@ -1,18 +1,25 @@
 package hyundai.blog.question.service;
 
+import hyundai.blog.challenge.entity.ChallengeTil;
+import hyundai.blog.challenge.exception.ChallengeTilIdNotFoundException;
+import hyundai.blog.challenge.repository.ChallengeTilRepository;
+import hyundai.blog.comment.repository.CommentRepository;
+import hyundai.blog.member.entity.Member;
 import hyundai.blog.member.exception.MemberIdNotFoundException;
 import hyundai.blog.member.repository.MemberRepository;
-import hyundai.blog.question.dto.QuestionCreateRequest;
-import hyundai.blog.question.dto.QuestionCreateResponse;
-import hyundai.blog.question.dto.QuestionDeleteResponse;
-import hyundai.blog.question.dto.QuestionUpdateRequest;
-import hyundai.blog.question.dto.QuestionUpdateResponse;
+import hyundai.blog.question.dto.*;
 import hyundai.blog.question.entity.Question;
 import hyundai.blog.question.exception.QuestionIdNotFoundException;
 import hyundai.blog.question.repository.QuestionRepository;
+import hyundai.blog.question_comment.dto.QuestionCommentViewDto;
+import hyundai.blog.question_comment.entity.QuestionComment;
+import hyundai.blog.question_comment.repository.QuestionCommentRepository;
 import hyundai.blog.util.JwtTokenProvider;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +30,10 @@ public class QuestionService {
     private final JwtTokenProvider jwtTokenProvider;
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
+    private final ChallengeTilRepository challengeTilRepository;
+    private final QuestionCommentRepository questionCommentRepository;
+    private static final int SIZE = 12;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public QuestionCreateResponse createQuestion(QuestionCreateRequest request) {
@@ -76,5 +87,61 @@ public class QuestionService {
 
     private void validateChallengeTilIdExists(Long challengeTilId) {
         /* [TODO] challengeTil, challenge 완셩되면 구현하기*/
+    }
+
+    public Page<QuestionsPreviewDto> getQuestions(Long challengeTilId, int page) {
+        Pageable pageable = PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        // 2) 페이지 요청에 따른 모든 Question 조회
+        Page<Question> questionPage = questionRepository.findAll(pageable);
+
+        List<QuestionsPreviewDto> questionsPreviewDtos = questionPage.stream()
+                .map(question -> {
+                    Member member = memberRepository.findById(question.getMemberId()).orElseThrow(MemberIdNotFoundException::new);
+
+                    ChallengeTil challengeTil = challengeTilRepository.findById(challengeTilId).orElseThrow(ChallengeTilIdNotFoundException::new);
+
+                    Long commentsCount = questionCommentRepository.countByQuestionId(question.getId());
+
+
+                    return QuestionsPreviewDto.of(member, challengeTil, question, commentsCount);
+                }).toList();
+
+        return new PageImpl<>(questionsPreviewDtos, pageable, questionPage.getTotalElements());
+    }
+
+    @Transactional
+    public QuestionDetailDto getQuestion(Long questionsId) {
+        //questionCommentViewDto 생성을 위해
+        //Member member, QuestionComment questionComment 가져오기
+        Question question = questionRepository.findById(questionsId)
+                .orElseThrow(QuestionIdNotFoundException::new);
+
+        List<QuestionComment> questionComment = questionCommentRepository.findAllByQuestionId(questionsId);
+
+        //questionCommentViewDto 생성 <List>형태로 담아주기
+        List<QuestionCommentViewDto> questionCommentViewDtos = questionComment.stream()
+                .map(questionComments -> {
+                    Member member = memberRepository.findById(questionComments.getMemberId())
+                            .orElseThrow(MemberIdNotFoundException::new);
+
+                    return QuestionCommentViewDto.of(member, questionComments);
+                }).toList();
+
+
+        //questionDetailDto 생성을 위해
+        //ChallengeTil challengeTil, Member member,Question question,Long commentCounts,
+        //List<QuestionCommentViewDto> questionCommentViewDtoList 가져오기
+
+        ChallengeTil challengeTil = challengeTilRepository.findById(question.getChallengeTilId())
+                .orElseThrow(ChallengeTilIdNotFoundException::new);
+
+        Member member = memberRepository.findById(question.getMemberId())
+                .orElseThrow(MemberIdNotFoundException::new);
+
+        Long commentsCounts = questionCommentRepository.countByQuestionId(questionsId);
+
+        //questionCommentDto를 이용해서 questionDetailDto 생성
+        return QuestionDetailDto.of(challengeTil, member, question, commentsCounts, questionCommentViewDtos);
     }
 }

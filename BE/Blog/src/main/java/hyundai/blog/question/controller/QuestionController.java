@@ -1,24 +1,20 @@
 package hyundai.blog.question.controller;
 
-import hyundai.blog.question.dto.QuestionCreateRequest;
-import hyundai.blog.question.dto.QuestionCreateResponse;
-import hyundai.blog.question.dto.QuestionDeleteResponse;
-import hyundai.blog.question.dto.QuestionUpdateRequest;
+import hyundai.blog.question.dto.*;
+import hyundai.blog.question.repository.QuestionRepository;
 import hyundai.blog.question.service.QuestionService;
+import hyundai.blog.til.dto.TilPreviewDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final QuestionRepository questionRepository;
 
 
     @PostMapping("/challenges/{challengeId}/{challengeTilId}/question")
@@ -52,6 +48,24 @@ public class QuestionController {
         QuestionDeleteResponse response = questionService.deleteQuestion(questionId);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/challenges/{challengeTilId}/questions")
+    public ResponseEntity<?> getQuestions(
+            @PathVariable Long challengeTilId,
+            @RequestParam int page
+    ) {
+        Page<QuestionsPreviewDto> questionsPreviewDtos =  questionService.getQuestions(challengeTilId, page);
+        return ResponseEntity.ok(questionsPreviewDtos);
+    }
+
+    @GetMapping("/questions/{questionsId}")
+    public ResponseEntity<?> getQuestion(
+            @PathVariable Long questionsId
+    ) {
+        QuestionDetailDto questionDetailDto = questionService.getQuestion(questionsId);
+
+        return ResponseEntity.ok(questionDetailDto);
     }
 
 

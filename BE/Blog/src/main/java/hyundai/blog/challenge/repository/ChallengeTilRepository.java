@@ -9,4 +9,6 @@ import java.util.List;
 public interface ChallengeTilRepository extends JpaRepository<ChallengeTil, Long> {
 
     List<ChallengeTil> findAllByChallengeId(Long challengeId);
+
+    ChallengeTil findByChallengeId(Long challengeId);
 }
