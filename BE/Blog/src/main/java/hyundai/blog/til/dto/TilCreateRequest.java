@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class TilCreateRequest {
     private String language;
+    private String thumbnailImage;
     private String site;
     private String algorithm;
     private String title;

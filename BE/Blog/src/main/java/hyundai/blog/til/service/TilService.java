@@ -1,12 +1,16 @@
 package hyundai.blog.til.service;
 
+import hyundai.blog.comment.dto.CommentDetailDto;
 import hyundai.blog.comment.entity.Comment;
 import hyundai.blog.comment.repository.CommentRepository;
 import hyundai.blog.like.repository.LikeRepository;
 import hyundai.blog.member.entity.Member;
+import hyundai.blog.member.exception.MemberIdNotFoundException;
+import hyundai.blog.member.repository.MemberRepository;
 import hyundai.blog.til.dto.TilCreateRequest;
 import hyundai.blog.til.dto.TilDeleteResponse;
 import hyundai.blog.til.dto.TilGetResponse;
+import hyundai.blog.til.dto.TilPreviewDto;
 import hyundai.blog.til.dto.TilUpdateRequest;
 import hyundai.blog.til.entity.Til;
 import hyundai.blog.til.exception.InvalidTilOwnerException;
@@ -16,6 +20,11 @@ import hyundai.blog.util.MemberResolver;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,10 +34,14 @@ import java.util.List;
 @Service
 @Log4j2
 public class TilService {
+
+    private static final int SIZE = 12;
+
     private final MemberResolver memberResolver;
     private final CommentRepository commentRepository;
     private final TilRepository tilRepository;
     private final LikeRepository likeRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Til save(TilCreateRequest request) {
@@ -39,6 +52,7 @@ public class TilService {
         Til til = Til.builder()
                 .memberId(loggedInMember.getId())   // 로그인한 멤버의 memberId로 설정
                 .language(request.getLanguage())
+                .thumbnailImage(request.getThumbnailImage())
                 .site(request.getSite())
                 .algorithm(request.getAlgorithm())
                 .title(request.getTitle())
@@ -113,6 +127,18 @@ public class TilService {
         // 3) tilId에 해당하는 comment들 list로 가져오기
         List<Comment> comments = commentRepository.findAllByTilId(tilId);
 
+        // 4) comment들을 순회하면서 comment dto list를 만들어준다.
+        List<CommentDetailDto> commentDetailDtos = comments.stream()
+                .map(comment -> {
+                    // Member 객체 조회
+                    Member member = memberRepository.findById(comment.getMemberId())
+                            .orElseThrow(MemberIdNotFoundException::new);
+
+                    // CommentDetailDto 생성
+                    return CommentDetailDto.of(comment, member);
+                })
+                .toList();
+
         // 4) tilId에 해당하는 like의 개수를 count 하고 변수에 저장
         Long countLikes = likeRepository.countByTilId(tilId);
 
@@ -127,7 +153,8 @@ public class TilService {
 
         // 6) 각각의 entity 및 dto를 바탕으로 getResponse Dto 생성
         // til + comment(list) + countLikes + isLiked 를 합쳐서 dto 만들기
-        TilGetResponse tilGetResponse = new TilGetResponse(til, comments, countLikes, isLiked);
+        TilGetResponse tilGetResponse = new TilGetResponse(til, commentDetailDtos, countLikes,
+                isLiked);
 
         // return dto... 하기!
         return tilGetResponse;
@@ -137,5 +164,35 @@ public class TilService {
         if (!til.getMemberId().equals(loggedInMember.getId())) {
             throw new InvalidTilOwnerException();
         }
+    }
+
+    @Transactional
+    public Page<TilPreviewDto> getTilsList(int page) {
+        // 1) Pageable 인터페이스 생성
+        Pageable pageable = PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        // 2) 페이지 요청에 따른 모든 Til 조회
+        Page<Til> tilPage = tilRepository.findAll(pageable);
+
+        // 2. 각 Til 엔티티를 TilPreviewDto로 변환
+        List<TilPreviewDto> tilPreviewDtos = tilPage.stream()
+                .map(til -> {
+                    // 1) Member 엔티티 가져오기
+                    Member member = memberRepository.findById(til.getMemberId())
+                            .orElseThrow(MemberIdNotFoundException::new);
+
+                    // 2) Like 개수 가져오기
+                    Long likeCount = likeRepository.countByTilId(til.getId());
+
+                    // 3) Comment 개수 가져오기
+                    Long commentCount = commentRepository.countByTilId(til.getId());
+
+                    // 1, 2, 3을 사용하여 TilPreviewDto 생성
+                    return TilPreviewDto.of(til, member, commentCount, likeCount);
+                })
+                .toList();
+
+        // 3. TilPreviewDto 리스트를 Page<TilPreviewDto>로 변환
+        return new PageImpl<>(tilPreviewDtos, pageable, tilPage.getTotalElements());
     }
 }
