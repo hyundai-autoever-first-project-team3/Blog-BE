@@ -3,10 +3,13 @@ package hyundai.blog.til.controller;
 import hyundai.blog.til.dto.TilCreateRequest;
 import hyundai.blog.til.dto.TilDeleteResponse;
 import hyundai.blog.til.dto.TilGetResponse;
+import hyundai.blog.til.dto.TilPreviewDto;
 import hyundai.blog.til.dto.TilUpdateRequest;
 import hyundai.blog.til.entity.Til;
 import hyundai.blog.til.service.TilService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,4 +50,13 @@ public class TilController {
 
         return ResponseEntity.ok(tilGetResponse);
     }
+
+    @GetMapping("/tils")
+    public ResponseEntity<?> getTilsList(
+            @RequestParam int page
+    ) {
+        Page<TilPreviewDto> tilList =  tilService.getTilsList(page);
+        return ResponseEntity.ok(tilList);
+    }
+
 }
