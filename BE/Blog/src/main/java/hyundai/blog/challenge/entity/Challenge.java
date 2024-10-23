@@ -24,4 +24,9 @@ public class Challenge {
     private Long views;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    // 조회수 증가 메서드
+    public void incrementViews() {
+        this.views += 1;
+    }
 }

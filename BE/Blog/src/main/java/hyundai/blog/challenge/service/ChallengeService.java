@@ -2,17 +2,24 @@ package hyundai.blog.challenge.service;
 
 import hyundai.blog.algorithm.entity.Algorithm;
 import hyundai.blog.algorithm.repository.AlgorithmRepository;
+import hyundai.blog.challenge.dto.ChallengePreviewDto;
 import hyundai.blog.challenge.entity.Challenge;
 import hyundai.blog.challenge.entity.ChallengeTil;
+import hyundai.blog.challenge.exception.ChallengeIdNotFoundException;
 import hyundai.blog.challenge.repository.ChallengeRepository;
 import hyundai.blog.challenge.repository.ChallengeTilRepository;
 import hyundai.blog.gpt.dto.ChallengeTilGPTDto;
 import hyundai.blog.gpt.dto.ChatGPTRequest;
 import hyundai.blog.gpt.dto.ChatGPTResponse;
+import hyundai.blog.member.entity.Member;
+import hyundai.blog.member.exception.MemberIdNotFoundException;
+import hyundai.blog.til.dto.TilPreviewDto;
+import hyundai.blog.til.entity.Til;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -92,7 +99,27 @@ public class ChallengeService {
     public List<ChallengeTil> getChallengeTils(Long id) {
         List<ChallengeTil> getChallengeTils = challengeTilRepository.findAllByChallengeId(id);
 
+        Challenge challenge = challengeRepository.findById(id).orElseThrow(ChallengeIdNotFoundException::new);
+
+        challenge.incrementViews();
+
+        challengeRepository.save(challenge);
+
         return getChallengeTils;
+    }
+
+    public Page<ChallengePreviewDto> getChallengePreview(int page) {
+        // 1) Pageable 인터페이스 생성
+        Pageable pageable = PageRequest.of(page, 12, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Challenge> challengePage = challengeRepository.findAll(pageable);
+
+        List<ChallengePreviewDto> challengePreviewDto = challengePage.stream()
+                .map(challenge -> {
+                    return ChallengePreviewDto.of(challenge);
+                }).toList();
+
+        return new PageImpl<>(challengePreviewDto, pageable, challengePage.getTotalElements());
     }
 
 }
