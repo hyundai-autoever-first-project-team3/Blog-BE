@@ -39,6 +39,7 @@ public class TilService {
         Til til = Til.builder()
                 .memberId(loggedInMember.getId())   // 로그인한 멤버의 memberId로 설정
                 .language(request.getLanguage())
+                .thumbnailImage(request.getThumbnailImage())
                 .site(request.getSite())
                 .algorithm(request.getAlgorithm())
                 .title(request.getTitle())

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TilUpdateRequest {
     private String language;
+    private String thumbnailImage;
     private String site;
     private String algorithm;
     private String title;

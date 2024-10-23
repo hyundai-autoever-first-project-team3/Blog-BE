@@ -20,7 +20,8 @@ public class Til {
 
     @Column(name = "member_id")
     private Long memberId;
-
+    @Column(name = "thumbnail_image")
+    private String thumbnailImage;
     private String language;
     private String site;
     private String algorithm;
@@ -40,6 +41,7 @@ public class Til {
 
     public void change(TilUpdateRequest request){
         this.language = request.getLanguage();
+        this.thumbnailImage = request.getThumbnailImage();
         this.site = request.getSite();
         this.algorithm = request.getAlgorithm();
         this.title = request.getTitle();
