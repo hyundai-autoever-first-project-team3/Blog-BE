@@ -11,3 +11,4 @@ public class QuestionIdNotFoundException extends RuntimeException{
         super("[ERROR] 해당 questionId는 존재하지 않습니다.");
     }
 }
+
