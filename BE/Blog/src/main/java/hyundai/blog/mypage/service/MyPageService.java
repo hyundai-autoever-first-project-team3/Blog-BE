@@ -5,11 +5,14 @@ import hyundai.blog.like.entity.Like;
 import hyundai.blog.like.repository.LikeRepository;
 import hyundai.blog.member.entity.Member;
 import hyundai.blog.member.exception.MemberIdNotFoundException;
+import hyundai.blog.mypage.dto.StatisticViewDto;
 import hyundai.blog.til.dto.TilPreviewDto;
 import hyundai.blog.til.entity.Til;
 import hyundai.blog.til.repository.TilRepository;
 import hyundai.blog.util.MemberResolver;
+
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -80,5 +83,31 @@ public class MyPageService {
                 .toList();
 
         return new PageImpl<>(tilPreviewDtos, pageable, likedTilsPage.getTotalElements());
+    }
+
+    public StatisticViewDto getStatistics() {
+        Member loggedInMember = memberResolver.getCurrentMember();
+
+        Long tilsCount = tilRepository.countByMemberId(loggedInMember.getId());
+
+        Long tilsMonthCount = tilRepository.countByMemberIdAndCreatedAtThisMonth(loggedInMember.getId());
+
+
+        //로그인된 멤버가 작성한 모든 tilId를 모두 조회해서
+        List<Til> tils = tilRepository.findAllByMemberId(loggedInMember.getId());
+
+        //likeRepository에서 위의 모든 tilId에 해당하는 것들을 count
+
+        // 각 Til의 like 개수 합산
+        Long receivedLikeCount = 0L;
+
+        for (Til til : tils) {
+            // 각 Til의 id로 like 개수 조회
+            receivedLikeCount += likeRepository.countByTilId(til.getId());
+        }
+
+        StatisticViewDto statisticViewDto = StatisticViewDto.of(tilsCount, tilsMonthCount, receivedLikeCount);
+
+        return statisticViewDto;
     }
 }

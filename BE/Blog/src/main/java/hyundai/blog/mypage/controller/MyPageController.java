@@ -1,5 +1,6 @@
 package hyundai.blog.mypage.controller;
 
+import hyundai.blog.mypage.dto.StatisticViewDto;
 import hyundai.blog.mypage.service.MyPageService;
 import hyundai.blog.til.dto.TilPreviewDto;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,13 @@ public class MyPageController {
         Page<TilPreviewDto> likedTilList = myPageService.getLikedTils(page);
 
         return ResponseEntity.ok(likedTilList);
+    }
+
+    @GetMapping("/mypage/statistics")
+    public ResponseEntity<?> getMyPageStatistics() {
+        StatisticViewDto statisticViewDto = myPageService.getStatistics();
+
+        return ResponseEntity.ok(statisticViewDto);
     }
 
 
