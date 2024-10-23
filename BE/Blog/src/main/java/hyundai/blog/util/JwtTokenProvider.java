@@ -72,15 +72,15 @@ public class JwtTokenProvider {
                     .getBody();
 
         } catch (MalformedJwtException malformedJwtException) {
-            throw new CustomJwtException("MalFormed"); // 잘못된 형식의 JWT가 전달된 경우
+            throw new CustomJwtException("[ERROR] Malformed Jwt Token"); // 잘못된 형식의 JWT가 전달된 경우
         } catch (ExpiredJwtException expiredJwtException) {
-            throw new CustomJwtException("Expired"); // 만료된 JWT가 전달된 경우
+            throw new CustomJwtException("[ERROR] Expired Jwt Token"); // 만료된 JWT가 전달된 경우
         } catch (InvalidClaimException invalidClaimException) {
-            throw new CustomJwtException("Invalid"); // JWT의 클레임이 유효하지 않은 경우
+            throw new CustomJwtException("[ERROR] Invalid Jwt Token"); // JWT의 클레임이 유효하지 않은 경우
         } catch (JwtException jwtException) {
-            throw new CustomJwtException("JWTError"); // 기타 JWT 관련 오류 발생 시
+            throw new CustomJwtException("[ERROR] JWTError"); // 기타 JWT 관련 오류 발생 시
         } catch (Exception e) {
-            throw new CustomJwtException("Error");// 그 외의 예외 발생 시
+            throw new CustomJwtException("[ERROR] Error");// 그 외의 예외 발생 시
         }
         return claim;
     }

@@ -47,7 +47,6 @@ public class SecurityConfig {
 
                     // 허용할 출처 설정 (모든 출처를 허용하거나 특정 도메인 추가)
                     config.setAllowedOrigins(List.of(
-                            "*",  // 모든 도메인 허용
                             "http://localhost:3000",  // 로컬 개발 환경에서의 요청 허용
                             "https://codingcare.site"  // 배포된 서버의 도메인 추가
                     ));
