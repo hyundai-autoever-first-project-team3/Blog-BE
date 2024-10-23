@@ -26,8 +26,12 @@ public class MyPageController {
     }
 
     @GetMapping("/mypage/likes")
-    public ResponseEntity<?> getMyPageLikes() {
-        return ResponseEntity.ok("");
+    public ResponseEntity<?> getMyPageLikes(
+            @RequestParam int page
+    ) {
+        Page<TilPreviewDto> likedTilList = myPageService.getLikedTils(page);
+
+        return ResponseEntity.ok(likedTilList);
     }
 
 

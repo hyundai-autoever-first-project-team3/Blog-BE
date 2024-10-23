@@ -3,6 +3,8 @@ package hyundai.blog.like.repository;
 import hyundai.blog.like.entity.Like;
 import hyundai.blog.member.entity.Member;
 import hyundai.blog.til.entity.Til;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -19,5 +21,8 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     // tilId에 해당하는 Like의 개수를 카운트하는 메서드
     Long countByTilId(Long tilId);
+
+    // 특정 회원의 좋아요한 TIL 리스트를 ID 내림차순으로 조회
+    Page<Like> findByMember(Member member, Pageable pageable);
 
 }
