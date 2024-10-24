@@ -1,5 +1,6 @@
 package hyundai.blog.mypage.service;
 
+import hyundai.blog.algorithm.dto.AlgorithmCountDto;
 import hyundai.blog.algorithm.entity.Algorithm;
 import hyundai.blog.algorithm.exception.AlgorithmIdNotFoundException;
 import hyundai.blog.algorithm.repository.AlgorithmRepository;
@@ -164,8 +165,16 @@ public class MyPageService {
             }
         }
 
+        // 여기서 algorithmCountMap을 순회하면서 각각을 뽑아가지고 객체 만들기
+        List<AlgorithmCountDto> algorithmCountDtos = algorithmCountMap.entrySet().stream()
+                .map(algorithmEntry -> {
+                    String name = algorithmEntry.getKey();
+                    int count = algorithmEntry.getValue();
+                    return AlgorithmCountDto.of(name, count);
+                }).toList();
+
         // 전체 개수 & 각각 알고리즘 별 푼 문제 개수를 dto에 담아서 리턴
-        TilAlgorithmDto tilAlgorithmDto = new TilAlgorithmDto(tils.size(), algorithmCountMap);
+        TilAlgorithmDto tilAlgorithmDto = new TilAlgorithmDto(tils.size(), algorithmCountDtos);
 
         // 5) 보완해야 할 알고리즘 종류 1개랑 가장 잘하는 알고리즘 종류 1개 각각 추출 (값이 작은 순서대로)
         List<String> algorithmsToImprove = algorithmCountMap.entrySet().stream()

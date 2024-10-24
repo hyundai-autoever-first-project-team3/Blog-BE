@@ -1,5 +1,7 @@
 package hyundai.blog.til.dto;
 
+import hyundai.blog.algorithm.dto.AlgorithmCountDto;
+import java.util.List;
 import lombok.*;
 
 import java.util.Map;
@@ -10,9 +12,7 @@ import java.util.Map;
 public class TilAlgorithmDto {
 
     private final int totalCount;
-    private final Map<String, Integer> algorithmCount;
-
-
+    private final List<AlgorithmCountDto> algorithmCountList;
 }
 
 
