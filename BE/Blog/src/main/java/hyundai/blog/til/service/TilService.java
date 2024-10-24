@@ -129,7 +129,6 @@ public class TilService {
 
     @Transactional
     public TilGetResponse get(Long tilId) {
-
         // 1) tilId에 해당하는 til 엔티티를 가져온다.
         Til til = tilRepository.findById(tilId).orElseThrow(TilIdNotFoundException::new);
 
@@ -174,9 +173,13 @@ public class TilService {
 
         // 로그인하지 않은 사용자라면 isLiked는 default (false) 값
 
+        Algorithm algorithm = algorithmRepository.findById(til.getAlgorithmId())
+                .orElseThrow(AlgorithmIdNotFoundException::new);
+
         // 6) 각각의 entity 및 dto를 바탕으로 getResponse Dto 생성
         // til + comment(list) + countLikes + isLiked 를 합쳐서 dto 만들기
         TilGetResponse tilGetResponse = new TilGetResponse(til, member, commentDetailDtos,
+                algorithm,
                 countLikes,
                 isLiked);
 
@@ -211,8 +214,12 @@ public class TilService {
                     // 3) Comment 개수 가져오기
                     Long commentCount = commentRepository.countByTilId(til.getId());
 
+                    // 4) Algorithm 가져오기
+                    Algorithm algorithm = algorithmRepository.findById(til.getAlgorithmId())
+                            .orElseThrow(AlgorithmIdNotFoundException::new);
+
                     // 1, 2, 3을 사용하여 TilPreviewDto 생성
-                    return TilPreviewDto.of(til, member, commentCount, likeCount);
+                    return TilPreviewDto.of(til, member, algorithm, commentCount, likeCount);
                 })
                 .toList();
 

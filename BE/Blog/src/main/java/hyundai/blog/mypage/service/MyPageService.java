@@ -1,5 +1,8 @@
 package hyundai.blog.mypage.service;
 
+import hyundai.blog.algorithm.entity.Algorithm;
+import hyundai.blog.algorithm.exception.AlgorithmIdNotFoundException;
+import hyundai.blog.algorithm.repository.AlgorithmRepository;
 import hyundai.blog.comment.repository.CommentRepository;
 import hyundai.blog.like.entity.Like;
 import hyundai.blog.like.repository.LikeRepository;
@@ -28,6 +31,7 @@ public class MyPageService {
     private final TilRepository tilRepository;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
+    private final AlgorithmRepository algorithmRepository;
 
     public Page<TilPreviewDto> getTils(int page) {
         // 1) Member 정보 조회
@@ -48,8 +52,12 @@ public class MyPageService {
                     // 2) Comment 개수 가져오기
                     Long commentCount = commentRepository.countByTilId(til.getId());
 
+                    // 3) Algorithm 가져오기
+                    Algorithm algorithm = algorithmRepository.findById(til.getAlgorithmId())
+                            .orElseThrow(AlgorithmIdNotFoundException::new);
+
                     // 1, 2, 3을 사용하여 TilPreviewDto 생성
-                    return TilPreviewDto.of(til, member, commentCount, likeCount);
+                    return TilPreviewDto.of(til, member, algorithm, commentCount, likeCount);
                 })
                 .toList();
 
@@ -75,7 +83,11 @@ public class MyPageService {
 
                     Long commentCount = commentRepository.countByTilId(til.getId());
 
-                    return TilPreviewDto.of(til, member, commentCount, likeCount);
+                    // 3) Algorithm 가져오기
+                    Algorithm algorithm = algorithmRepository.findById(til.getAlgorithmId())
+                            .orElseThrow(AlgorithmIdNotFoundException::new);
+
+                    return TilPreviewDto.of(til, member, algorithm, commentCount, likeCount);
                 })
                 .toList();
 
