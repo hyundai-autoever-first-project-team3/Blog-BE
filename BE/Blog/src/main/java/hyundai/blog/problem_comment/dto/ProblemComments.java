@@ -12,7 +12,7 @@ public record ProblemComments (
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public ProblemComments of(
+    public static ProblemComments of(
             Member member, ProblemComment problemComment
     ) {
         return new ProblemComments(

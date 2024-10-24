@@ -1,16 +1,12 @@
 package hyundai.blog.problem_comment.service;
 
+import hyundai.blog.member.exception.MemberIdNotFoundException;
 import hyundai.blog.member.repository.MemberRepository;
 import hyundai.blog.problem.exception.ProblemIdNotFoundException;
 import hyundai.blog.problem.repository.ProblemRepository;
 import hyundai.blog.problem.entity.Problem;
 import hyundai.blog.member.entity.Member;
-import hyundai.blog.problem_comment.dto.ProblemCommentCreateRequest;
-import hyundai.blog.problem_comment.dto.ProblemCommentCreateResponse;
-import hyundai.blog.problem_comment.dto.ProblemCommentDeleteResponse;
-import hyundai.blog.problem_comment.dto.ProblemCommentUpdateRequest;
-import hyundai.blog.problem_comment.dto.ProblemCommentUpdateResponse;
-import hyundai.blog.problem_comment.dto.ProblemCommentsPreviewDto;
+import hyundai.blog.problem_comment.dto.*;
 import hyundai.blog.problem_comment.entity.ProblemComment;
 import hyundai.blog.problem_comment.repository.ProblemCommentRepository;
 import hyundai.blog.util.MemberResolver;
@@ -18,10 +14,7 @@ import java.util.*;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,25 +90,27 @@ public class ProblemCommentService {
         return ProblemCommentDeleteResponse.of(problemComment, "problem comment 삭제 완료");
     }
 
-    public Page<ProblemCommentsPreviewDto> getQuestions(Long problemId, int page) {
+    public ProblemCommentsPreviewDto getQuestions(Long problemId, int page) {
         Pageable pageable = PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         // 2) 페이지 요청에 따른 모든 Question 조회
         Page<ProblemComment> problemCommentPage = problemCommentRepository.findAll(pageable);
 
-        List<ProblemCommentsPreviewDto> problemCommentsPreviewDtos = problemCommentPage.stream()
+        List<ProblemComments> problemCommentsDtos = problemCommentPage.stream()
                 .map(problemComment -> {
-                    Member member = memberRepository.findById(problem.getMemberId())
+                    Member member = memberRepository.findById(problemComment.getMemberId())
                             .orElseThrow(MemberIdNotFoundException::new);
 
-                    Problem problem = problemRepository.findById(problemId)
-                            .orElseThrow(ProblemIdNotFoundException::new);
-
-                    return problemCommentsPreviewDtos.of(member, problemComment);
+                    return ProblemComments.of(member, problemComment);
                 }).toList();
 
-        return new PageImpl<>(problemCommentsPreviewDtos, pageable,
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(ProblemIdNotFoundException::new);
+
+        Page<ProblemComments> problemCommentsList = new PageImpl<>(problemCommentsDtos, pageable,
                 problemCommentPage.getTotalElements());
+
+        return ProblemCommentsPreviewDto.of(problem, problemCommentsList);
     }
 
     private void validateProblemIdExists(Long problemId) {

@@ -22,7 +22,7 @@ public class ProblemCommentController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/problem_comment/{problemCommentId}")
+    @PutMapping("/problem_comments/{problemCommentId}")
     public ResponseEntity<?> updateQuestion(
             @RequestBody ProblemCommentUpdateRequest request,
             @PathVariable Long problemCommentId) {
@@ -34,7 +34,7 @@ public class ProblemCommentController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/problem_comment/{problemCommentId}")
+    @DeleteMapping("/problem_comments/{problemCommentId}")
     public ResponseEntity<?> deleteQuestion(
             @PathVariable Long problemCommentId) {
         ProblemCommentDeleteResponse response = problemCommentService.deleteProblemComment(
@@ -48,10 +48,9 @@ public class ProblemCommentController {
             @PathVariable Long problemId,
             @RequestParam(defaultValue = "0") int page
     ) {
+        System.out.println(problemId);
 
-
-        Page<ProblemCommentsPreviewDto> questionsPreviewDtos = problemCommentsService.getProblemComments(
-                problemId, page);
+        ProblemCommentsPreviewDto questionsPreviewDtos = problemCommentService.getQuestions(problemId, page);
 
         return ResponseEntity.ok(questionsPreviewDtos);
     }
