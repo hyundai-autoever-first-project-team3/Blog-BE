@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class TilController {
+
     private final TilService tilService;
 
     @PostMapping("/til")
@@ -53,9 +54,9 @@ public class TilController {
 
     @GetMapping("/tils")
     public ResponseEntity<?> getTilsList(
-            @RequestParam int page
+            @RequestParam(defaultValue = "0") int page
     ) {
-        Page<TilPreviewDto> tilList =  tilService.getTilsList(page);
+        Page<TilPreviewDto> tilList = tilService.getTilsList(page);
         return ResponseEntity.ok(tilList);
     }
 
