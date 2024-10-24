@@ -2,7 +2,6 @@ package hyundai.blog.member.service;
 
 import hyundai.blog.member.dto.MemberUpdateRequest;
 import hyundai.blog.member.entity.Member;
-import hyundai.blog.member.repository.MemberRepository;
 import hyundai.blog.util.MemberResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberRepository memberRepository;
     private final MemberResolver memberResolver;
 
     public Member getMemberInfo() {
