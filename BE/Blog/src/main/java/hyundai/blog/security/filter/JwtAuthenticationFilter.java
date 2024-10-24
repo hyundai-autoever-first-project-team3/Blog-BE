@@ -30,21 +30,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
 
-        // 1. 쿠키에서 accessToken 찾기
-        Cookie[] cookies = request.getCookies();
+        // 1. Authorization 헤더에서 accessToken 찾기
+        String authorizationHeader = request.getHeader("Authorization");
         String accessToken = null;
 
-        if (cookies != null) {
-            // 쿠키 배열에서 accessToken을 찾음
-            Optional<Cookie> accessTokenCookie = Arrays.stream(cookies)
-                    .filter(cookie -> "accessToken".equals(cookie.getName()))
-                    .findFirst();
-
-            if (accessTokenCookie.isPresent()) {
-                accessToken = accessTokenCookie.get().getValue();
-            }
+        // Authorization 헤더가 "Bearer "로 시작하는지 확인
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            // "Bearer " 이후의 부분을 accessToken으로 추출
+            accessToken = authorizationHeader.substring(7);
         }
 
         // 2. accessToken이 존재할 때 JWT 검증
@@ -75,7 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
         } else {
-            log.info("accessToken 쿠키가 없습니다.");
+            log.info("Authorization 헤더에 accessToken이 없습니다.");
         }
 
         // 필터 체인의 다음 필터로 요청을 전달
