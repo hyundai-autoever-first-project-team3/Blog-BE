@@ -1,17 +1,24 @@
 package hyundai.blog.mypage.service;
 
+import hyundai.blog.algorithm.entity.Algorithm;
+import hyundai.blog.algorithm.exception.AlgorithmIdNotFoundException;
+import hyundai.blog.algorithm.repository.AlgorithmRepository;
 import hyundai.blog.comment.repository.CommentRepository;
 import hyundai.blog.like.entity.Like;
 import hyundai.blog.like.repository.LikeRepository;
 import hyundai.blog.member.entity.Member;
 import hyundai.blog.member.exception.MemberIdNotFoundException;
 import hyundai.blog.mypage.dto.StatisticViewDto;
+import hyundai.blog.til.dto.TilAlgorithmDto;
 import hyundai.blog.til.dto.TilPreviewDto;
 import hyundai.blog.til.entity.Til;
 import hyundai.blog.til.repository.TilRepository;
 import hyundai.blog.util.MemberResolver;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +39,9 @@ public class MyPageService {
     private final TilRepository tilRepository;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
+    private final AlgorithmRepository algorithmRepository;
 
+    @Transactional
     public Page<TilPreviewDto> getTils(int page) {
         // 1) Member 정보 조회
         Member member = memberResolver.getCurrentMember();
@@ -60,6 +70,7 @@ public class MyPageService {
         return new PageImpl<>(tilPreviewDtos, pageable, tilPage.getTotalElements());
     }
 
+    @Transactional
     public Page<TilPreviewDto> getLikedTils(int page) {
         // 1) Member 정보 조회
         Member member = memberResolver.getCurrentMember();
@@ -85,13 +96,16 @@ public class MyPageService {
         return new PageImpl<>(tilPreviewDtos, pageable, likedTilsPage.getTotalElements());
     }
 
+    @Transactional
     public StatisticViewDto getStatistics() {
+        // 1) 로그인 된 멤버 가져오기
         Member loggedInMember = memberResolver.getCurrentMember();
 
+        // 2) 멤버가 작성한 게시글 수 가져오기
         Long tilsCount = tilRepository.countByMemberId(loggedInMember.getId());
 
+        // 3) 멤버가 이번 달에 작성한 게시글 수 가져오기
         Long tilsMonthCount = tilRepository.countByMemberIdAndCreatedAtThisMonth(loggedInMember.getId());
-
 
         //로그인된 멤버가 작성한 모든 tilId를 모두 조회해서
         List<Til> tils = tilRepository.findAllByMemberId(loggedInMember.getId());
@@ -101,12 +115,55 @@ public class MyPageService {
         // 각 Til의 like 개수 합산
         Long receivedLikeCount = 0L;
 
+        // algorithm에 대한 count를 저장하는 map
+        Map<String, Integer> algorithmCountMap = new HashMap<>();
+
+
+        List<Algorithm> algorithmList = algorithmRepository.findAll();
+        algorithmList
+                .forEach(algorithm -> {
+                    algorithmCountMap.put(algorithm.getEngClassification(), 0);
+                });
+
+
         for (Til til : tils) {
             // 각 Til의 id로 like 개수 조회
             receivedLikeCount += likeRepository.countByTilId(til.getId());
+
+            // 각 Til마다 존재하는 algorithmId에 해당하는 알고리즘 종류의 개수를 세도록
+            Algorithm algorithm = algorithmRepository.findById(til.getAlgorithmId()).orElseThrow(AlgorithmIdNotFoundException::new);
+
+            // 알고리즘의 이름을 가져옴
+            String algorithmKind = algorithm.getEngClassification();
+
+            if (algorithmCountMap.containsKey(algorithmKind)) {
+                algorithmCountMap.put(algorithmKind, algorithmCountMap.get(algorithmKind) + 1);
+            }else{
+                algorithmCountMap.put(algorithmKind, 1);
+            }
         }
 
-        StatisticViewDto statisticViewDto = StatisticViewDto.of(tilsCount, tilsMonthCount, receivedLikeCount);
+        // 전체 개수 & 각각 알고리즘 별 푼 문제 개수를 dto에 담아서 리턴
+        TilAlgorithmDto tilAlgorithmDto = new TilAlgorithmDto(tils.size(), algorithmCountMap);
+
+        // 5) 보완해야 할 알고리즘 종류 1개랑 가장 잘하는 알고리즘 종류 1개 각각 추출 (값이 작은 순서대로)
+        List<String> algorithmsToImprove = algorithmCountMap.entrySet().stream()
+                // 값에 따라 정렬
+                .sorted(Map.Entry.comparingByValue())
+                // 키만 추출 (알고리즘 이름)
+                .map(Map.Entry::getKey)
+                .toList();
+
+        String leastValue = algorithmsToImprove.get(0);
+        String mostValue = algorithmsToImprove.get(algorithmsToImprove.size() - 1);
+
+        /* [TODO]
+        *    1) 부족한 부분 (leastValue)를 가지고 문제 추천 만들기
+        *    2) AI 분석 (leastValue, mostValue) 가지고 ai 분석 만들기
+        * */
+
+        // 최종 Dto 생성
+        StatisticViewDto statisticViewDto = StatisticViewDto.of(tilsCount, tilsMonthCount, receivedLikeCount, tilAlgorithmDto, leastValue, mostValue);
 
         return statisticViewDto;
     }
