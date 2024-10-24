@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,13 +34,10 @@ public class ChallengeService {
     @Value("${openai.api.url}")
     private String apiURL;
 
-
     private final RestTemplate template;
-
     private final ChallengeRepository challengeRepository;
     private final ProblemRepository problemRepository;
     private final AlgorithmRepository algorithmRepository;
-
 
     @Transactional
     public void createChallenge() {
@@ -90,6 +88,12 @@ public class ChallengeService {
             problemRepository.save(challengeTil);
         }
 
+    }
+
+    // 매일 정각에 createChallenge 실행
+    @Scheduled(cron = "0 0 0 * * *")
+    public void scheduleDailyChallengeCreation() {
+        createChallenge(); // 매일 자정에 createChallenge 메서드 실행
     }
 
     public List<Problem> getChallengeTils(Long id) {
