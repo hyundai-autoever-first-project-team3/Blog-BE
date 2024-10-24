@@ -20,6 +20,10 @@ public class ChatGPTResponse {
         private Message message;
     }
 
+    public String getMessage(){
+        return choices.get(0).getMessage().getContent();
+    }
+
     public List<ChallengeTilGPTDto> extractCodingTestProblems() {
         List<ChallengeTilGPTDto> results = new ArrayList<>();
 

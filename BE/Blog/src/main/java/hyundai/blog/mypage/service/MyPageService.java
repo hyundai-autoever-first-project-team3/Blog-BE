@@ -4,6 +4,8 @@ import hyundai.blog.algorithm.entity.Algorithm;
 import hyundai.blog.algorithm.exception.AlgorithmIdNotFoundException;
 import hyundai.blog.algorithm.repository.AlgorithmRepository;
 import hyundai.blog.comment.repository.CommentRepository;
+import hyundai.blog.gpt.dto.ChatGPTRequest;
+import hyundai.blog.gpt.dto.ChatGPTResponse;
 import hyundai.blog.like.entity.Like;
 import hyundai.blog.like.repository.LikeRepository;
 import hyundai.blog.member.entity.Member;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -28,12 +31,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
 public class MyPageService {
 
     private static final int SIZE = 10;
+
+    @Value("${openai.model}")
+    private String model;
+
+    @Value("${openai.api.url}")
+    private String apiURL;
+
+    private final RestTemplate template;
 
     private final MemberResolver memberResolver;
     private final TilRepository tilRepository;
@@ -160,11 +172,25 @@ public class MyPageService {
         /* [TODO]
         *    1) 부족한 부분 (leastValue)를 가지고 문제 추천 만들기
         *    2) AI 분석 (leastValue, mostValue) 가지고 ai 분석 만들기
+        *       - 문제 title (문제 제목, ...)
+        *       - 문제 site (백준, 프로그래머스, ...)
+        *       - 문제 link (문제 링크, ...)
         * */
+
+        // ChatGPT ai 분석 리퀘스트 생성
+        ChatGPTRequest analizationRequest = ChatGPTRequest.createAIAnaliztionTestPrompt(tilAlgorithmDto, model);
+
+        // ChatGPT ai 분석
+        ChatGPTResponse chatGPTResponse = template.postForObject(apiURL, analizationRequest, ChatGPTResponse.class);
+
+        String chatGPTResult = chatGPTResponse.getMessage();
+        System.out.println(chatGPTResult);
+
 
         // 최종 Dto 생성
         StatisticViewDto statisticViewDto = StatisticViewDto.of(tilsCount, tilsMonthCount, receivedLikeCount, tilAlgorithmDto, leastValue, mostValue);
 
         return statisticViewDto;
     }
+
 }
