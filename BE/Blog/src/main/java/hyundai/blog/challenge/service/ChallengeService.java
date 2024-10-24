@@ -4,17 +4,13 @@ import hyundai.blog.algorithm.entity.Algorithm;
 import hyundai.blog.algorithm.repository.AlgorithmRepository;
 import hyundai.blog.challenge.dto.ChallengePreviewDto;
 import hyundai.blog.challenge.entity.Challenge;
-import hyundai.blog.challenge.entity.ChallengeTil;
+import hyundai.blog.problem.entity.Problem;
 import hyundai.blog.challenge.exception.ChallengeIdNotFoundException;
 import hyundai.blog.challenge.repository.ChallengeRepository;
-import hyundai.blog.challenge.repository.ChallengeTilRepository;
+import hyundai.blog.problem.repository.ProblemRepository;
 import hyundai.blog.gpt.dto.ChallengeTilGPTDto;
 import hyundai.blog.gpt.dto.ChatGPTRequest;
 import hyundai.blog.gpt.dto.ChatGPTResponse;
-import hyundai.blog.member.entity.Member;
-import hyundai.blog.member.exception.MemberIdNotFoundException;
-import hyundai.blog.til.dto.TilPreviewDto;
-import hyundai.blog.til.entity.Til;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -41,7 +37,7 @@ public class ChallengeService {
     private final RestTemplate template;
 
     private final ChallengeRepository challengeRepository;
-    private final ChallengeTilRepository challengeTilRepository;
+    private final ProblemRepository problemRepository;
     private final AlgorithmRepository algorithmRepository;
 
 
@@ -81,7 +77,7 @@ public class ChallengeService {
         for (ChallengeTilGPTDto problem : problems) {
 
             // 7) Challenge Til entity 를 만들어줬다.
-            ChallengeTil challengeTil = ChallengeTil.builder()
+            Problem challengeTil = Problem.builder()
                     .title(problem.getTitle())
                     .challengeId(savedChallenge.getId())
                     .level(problem.getLevel())
@@ -91,13 +87,13 @@ public class ChallengeService {
                     .build();
 
             // 8) challenge til repository에 저장
-            challengeTilRepository.save(challengeTil);
+            problemRepository.save(challengeTil);
         }
 
     }
 
-    public List<ChallengeTil> getChallengeTils(Long id) {
-        List<ChallengeTil> getChallengeTils = challengeTilRepository.findAllByChallengeId(id);
+    public List<Problem> getChallengeTils(Long id) {
+        List<Problem> getProblems = problemRepository.findAllByChallengeId(id);
 
         Challenge challenge = challengeRepository.findById(id).orElseThrow(ChallengeIdNotFoundException::new);
 
@@ -105,7 +101,7 @@ public class ChallengeService {
 
         challengeRepository.save(challenge);
 
-        return getChallengeTils;
+        return getProblems;
     }
 
     public Page<ChallengePreviewDto> getChallengePreview(int page) {
