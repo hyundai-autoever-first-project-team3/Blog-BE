@@ -118,16 +118,14 @@ public class TilService {
 
     @Transactional
     public TilGetResponse get(Long tilId) {
-        // 1) 현재 로그인 된 멤버의 ID를 가져온다.
-        Member loggedInMember = memberResolver.getCurrentMember();
 
-        // 2) tilId에 해당하는 til 엔티티를 가져온다.
+        // 1) tilId에 해당하는 til 엔티티를 가져온다.
         Til til = tilRepository.findById(tilId).orElseThrow(TilIdNotFoundException::new);
 
-        // 3) tilId에 해당하는 comment들 list로 가져오기
+        // 2) tilId에 해당하는 comment들 list로 가져오기
         List<Comment> comments = commentRepository.findAllByTilId(tilId);
 
-        // 4) comment들을 순회하면서 comment dto list를 만들어준다.
+        // 3) comment들을 순회하면서 comment dto list를 만들어준다.
         List<CommentDetailDto> commentDetailDtos = comments.stream()
                 .map(comment -> {
                     // Member 객체 조회
@@ -149,7 +147,17 @@ public class TilService {
 
         로그인 된 내 memberId와 해당 tilId가 LikeRepository에 존재하면 isLiked는 true 없으면 false
         */
-        boolean isLiked = likeRepository.existsByMemberIdAndTilId(loggedInMember.getId(), tilId);
+
+        boolean isLiked = false;
+
+        // 로그인 한 사용자라면 isLiked 값을 like repository에서 찾아서 리턴
+        if (memberResolver.isAuthenticated()) {
+            System.out.println("authenticated!");
+            Member loggedInMember = memberResolver.getCurrentMember();
+            isLiked = likeRepository.existsByMemberIdAndTilId(loggedInMember.getId(), tilId);
+        }
+
+        // 로그인하지 않은 사용자라면 isLiked는 default (false) 값
 
         // 6) 각각의 entity 및 dto를 바탕으로 getResponse Dto 생성
         // til + comment(list) + countLikes + isLiked 를 합쳐서 dto 만들기
