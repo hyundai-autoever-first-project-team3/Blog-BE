@@ -19,7 +19,7 @@ public class MyPageController {
 
     @GetMapping("/mypage/tils")
     public ResponseEntity<?> getMyPageTils(
-            @RequestParam int page
+            @RequestParam(defaultValue = "0") int page
     ) {
         Page<TilPreviewDto> tilList = myPageService.getTils(page);
 
@@ -28,7 +28,7 @@ public class MyPageController {
 
     @GetMapping("/mypage/likes")
     public ResponseEntity<?> getMyPageLikes(
-            @RequestParam int page
+            @RequestParam(defaultValue = "0") int page
     ) {
         Page<TilPreviewDto> likedTilList = myPageService.getLikedTils(page);
 

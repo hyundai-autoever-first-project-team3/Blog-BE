@@ -19,6 +19,7 @@ public class TilGetResponse {
     private Long commentCounts;
     private boolean isLiked;
     private Long likeCounts;
+    private Boolean isOwner;
     private MemberWriterDto memberWriterDto;
 
     public TilGetResponse(Til til, Member member, List<CommentDetailDto> commentDetailDtos,
@@ -30,6 +31,7 @@ public class TilGetResponse {
         this.memberWriterDto = MemberWriterDto.of(member);
         this.commentDetailDtos = commentDetailDtos;
         this.commentCounts = (long) commentDetailDtos.size();
+        this.isOwner = member.getId().equals(til.getMemberId());
         this.isLiked = isLiked;
         this.likeCounts = likeCounts;
     }
