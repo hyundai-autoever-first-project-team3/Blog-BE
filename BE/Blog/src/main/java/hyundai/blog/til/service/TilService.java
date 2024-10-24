@@ -151,8 +151,12 @@ public class TilService {
         // 4) tilId에 해당하는 like의 개수를 count 하고 변수에 저장
         Long countLikes = likeRepository.countByTilId(tilId);
 
+        // 5) til의 작성자 정보 가져오기
+        Member member = memberRepository.findById(til.getMemberId())
+                .orElseThrow(MemberIdNotFoundException::new);
+
         /*
-        5) isLiked 값 설정
+        6) isLiked 값 설정
         memberId와 tilId에 해당하는 like가 존재하면 isLiked를 true로 설정
         존재하지 않으면 false로 설정
 
@@ -172,7 +176,8 @@ public class TilService {
 
         // 6) 각각의 entity 및 dto를 바탕으로 getResponse Dto 생성
         // til + comment(list) + countLikes + isLiked 를 합쳐서 dto 만들기
-        TilGetResponse tilGetResponse = new TilGetResponse(til, commentDetailDtos, countLikes,
+        TilGetResponse tilGetResponse = new TilGetResponse(til, member, commentDetailDtos,
+                countLikes,
                 isLiked);
 
         // return dto... 하기!

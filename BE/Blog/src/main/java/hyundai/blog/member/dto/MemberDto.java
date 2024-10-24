@@ -18,16 +18,19 @@ public class MemberDto extends User {
     private final String profileImage;
     private final String nickname;
     private final String social;
+    private final String intro;
     private final List<MemberRole> memberRoleList;
 
     // JWT Claims로부터 MemberDto 생성
     public MemberDto(Map<String, Object> claims) {
-        super((String) claims.get("email"), "", mapToGrantedAuthorities((String) claims.get("role")));
+        super((String) claims.get("email"), "",
+                mapToGrantedAuthorities((String) claims.get("role")));
         this.email = (String) claims.get("email");
         this.name = (String) claims.get("name");
         this.profileImage = (String) claims.get("profileImage");
         this.nickname = (String) claims.get("name");  // JWT에서 별도의 닉네임 필드가 없으므로 name을 사용
         this.social = (String) claims.get("social");
+        this.intro = "";
         this.memberRoleList = List.of(MemberRole.valueOf((String) claims.get("role")));
     }
 
