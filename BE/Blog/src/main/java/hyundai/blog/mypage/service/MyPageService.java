@@ -4,6 +4,7 @@ import hyundai.blog.algorithm.entity.Algorithm;
 import hyundai.blog.algorithm.exception.AlgorithmIdNotFoundException;
 import hyundai.blog.algorithm.repository.AlgorithmRepository;
 import hyundai.blog.comment.repository.CommentRepository;
+import hyundai.blog.gpt.dto.AIRecommendDto;
 import hyundai.blog.gpt.dto.ChatGPTRequest;
 import hyundai.blog.gpt.dto.ChatGPTResponse;
 import hyundai.blog.like.entity.Like;
@@ -169,28 +170,47 @@ public class MyPageService {
         String leastValue = algorithmsToImprove.get(0);
         String mostValue = algorithmsToImprove.get(algorithmsToImprove.size() - 1);
 
-        /* [TODO]
-        *    1) 부족한 부분 (leastValue)를 가지고 문제 추천 만들기
-        *    2) AI 분석 (leastValue, mostValue) 가지고 ai 분석 만들기
-        *       - 문제 title (문제 제목, ...)
-        *       - 문제 site (백준, 프로그래머스, ...)
-        *       - 문제 link (문제 링크, ...)
-        * */
+        String analysisResult = getAnalysisResult(tilAlgorithmDto);
 
-        // ChatGPT ai 분석 리퀘스트 생성
-        ChatGPTRequest analizationRequest = ChatGPTRequest.createAIAnaliztionTestPrompt(tilAlgorithmDto, model);
-
-        // ChatGPT ai 분석
-        ChatGPTResponse chatGPTResponse = template.postForObject(apiURL, analizationRequest, ChatGPTResponse.class);
-
-        String chatGPTResult = chatGPTResponse.getMessage();
-        System.out.println(chatGPTResult);
-
+        AIRecommendDto recommendResult = getRecommendResult(tilAlgorithmDto);
 
         // 최종 Dto 생성
-        StatisticViewDto statisticViewDto = StatisticViewDto.of(tilsCount, tilsMonthCount, receivedLikeCount, tilAlgorithmDto, leastValue, mostValue);
+        StatisticViewDto statisticViewDto = StatisticViewDto.of(tilsCount, tilsMonthCount, receivedLikeCount, tilAlgorithmDto, leastValue, mostValue, analysisResult, recommendResult);
 
         return statisticViewDto;
+    }
+
+    private String getAnalysisResult(TilAlgorithmDto tilAlgorithmDto) {
+        // ChatGPT ai 분석 리퀘스트 생성
+        ChatGPTRequest analysisRequest = ChatGPTRequest.createAIAnaliztionTestPrompt(tilAlgorithmDto, model);
+
+        // ChatGPT ai 분석
+        ChatGPTResponse analysisResponse = template.postForObject(apiURL, analysisRequest, ChatGPTResponse.class);
+
+        return analysisResponse.getMessage();
+    }
+
+    private AIRecommendDto getRecommendResult(TilAlgorithmDto tilAlgorithmDto) {
+        ChatGPTRequest recommendRequest = ChatGPTRequest.createAIRecommendTestPrompt(tilAlgorithmDto, model);
+
+        ChatGPTResponse recommendResponse = template.postForObject(apiURL, recommendRequest, ChatGPTResponse.class);
+
+        String message = recommendResponse.getMessage();
+
+        // 메시지를 파싱하여 정보 추출
+        String[] lines = message.split("\n");
+
+        String title = lines[0].replace("Title: ", "").trim();
+        String siteKinds = lines[1].replace("Kind: ", "").trim();
+        String site = lines[2].replace("Link: ", "").trim();
+
+        // AIRecommendDto 객체 생성 후 값 설정
+        AIRecommendDto aiRecommendDto = new AIRecommendDto();
+        aiRecommendDto.setTitle(title);
+        aiRecommendDto.setSiteKinds(siteKinds);
+        aiRecommendDto.setSite(site);
+
+        return aiRecommendDto;
     }
 
 }

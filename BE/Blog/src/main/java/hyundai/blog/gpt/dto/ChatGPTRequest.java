@@ -31,4 +31,17 @@ public class ChatGPTRequest {
         return new ChatGPTRequest(model, prompt);
     }
 
+
+
+    public static ChatGPTRequest createAIRecommendTestPrompt(TilAlgorithmDto tilAlgorithmDto, String model) {
+        String prompt = String.format("다음은 \"Algorithm 이름\"과 그에 해당하는 성공 횟수입니다. 이 데이터를 바탕으로 각 알고리즘 카테고리에서 가장 부족한 알고리즘과 관련한 알고리즘 문제 사이트를 추천해 주세요." +
+                "Please provide 1 coding test questions that fit the subject of the %s on the public platform. Each problem should have a title, kind, and a link to the problem." +
+                "Choose a random question from the sites on https://programmers.co.kr/or https://www.acmicpc.net/" +
+                "Title, kind, Link이 값 빼고 나머지 출력 값은 제거해 줘." +
+                "* 표시도 제거해 줘", tilAlgorithmDto.toString());
+
+        return new ChatGPTRequest(model, prompt);
+    }
+
 }
+
