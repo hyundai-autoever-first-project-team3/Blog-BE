@@ -1,4 +1,4 @@
-package hyundai.blog.challenge.entity;
+package hyundai.blog.problem.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Entity
-@Table(name = "CHALLENGE_TIL")
-public class ChallengeTil {
+@Table(name = "PROBLEM")
+public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
