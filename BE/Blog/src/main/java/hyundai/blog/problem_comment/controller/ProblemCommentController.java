@@ -13,7 +13,7 @@ public class ProblemCommentController {
 
     private final ProblemCommentService problemCommentService;
 
-    @PostMapping("/problem_comment/")
+    @PostMapping("/problem_comment")
     public ResponseEntity<?> createProblemComment(
             @RequestBody ProblemCommentCreateRequest request) {
 
