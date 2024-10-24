@@ -33,6 +33,7 @@ public class Member {
     private String profileImage;
     private String nickname;
     private String social;
+    private String intro;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
