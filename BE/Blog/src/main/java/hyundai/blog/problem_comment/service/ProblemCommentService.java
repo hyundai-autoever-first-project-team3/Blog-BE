@@ -90,6 +90,7 @@ public class ProblemCommentService {
         return ProblemCommentDeleteResponse.of(problemComment, "problem comment 삭제 완료");
     }
 
+    @Transactional
     public ProblemCommentsPreviewDto getQuestions(Long problemId, int page) {
         Pageable pageable = PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
 
