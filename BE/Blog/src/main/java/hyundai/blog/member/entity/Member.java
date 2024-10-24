@@ -51,5 +51,6 @@ public class Member {
     public void updateNicknameAndIntro(MemberUpdateRequest request) {
         this.nickname = request.nickname();
         this.intro = request.intro();
+        this.updatedAt = LocalDateTime.now();
     }
 }
