@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CommentCreateRequest {
-    private Long memberId;
     private Long tilId;
     private String content;
 }
