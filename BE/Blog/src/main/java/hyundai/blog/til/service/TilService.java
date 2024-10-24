@@ -1,5 +1,8 @@
 package hyundai.blog.til.service;
 
+import hyundai.blog.algorithm.entity.Algorithm;
+import hyundai.blog.algorithm.exception.AlgorithmIdNotFoundException;
+import hyundai.blog.algorithm.repository.AlgorithmRepository;
 import hyundai.blog.comment.dto.CommentDetailDto;
 import hyundai.blog.comment.entity.Comment;
 import hyundai.blog.comment.repository.CommentRepository;
@@ -42,11 +45,16 @@ public class TilService {
     private final TilRepository tilRepository;
     private final LikeRepository likeRepository;
     private final MemberRepository memberRepository;
+    private final AlgorithmRepository algorithmRepository;
 
     @Transactional
     public Til save(TilCreateRequest request) {
         // 1) 현재 로그인 된 멤버의 ID를 가져온다.
         Member loggedInMember = memberResolver.getCurrentMember();
+
+        // 알고리즘 검증
+        Algorithm algorithm = algorithmRepository.findById(request.getAlgorithmId())
+                .orElseThrow(AlgorithmIdNotFoundException::new);
 
         // 2) til create request & member 로 til entity 생성
         Til til = Til.builder()
@@ -54,9 +62,8 @@ public class TilService {
                 .language(request.getLanguage())
                 .thumbnailImage(request.getThumbnailImage())
                 .site(request.getSite())
-                .algorithm(request.getAlgorithm())
+                .algorithmId(algorithm.getId())
                 .title(request.getTitle())
-                .tag(request.getTag())
                 .link(request.getLink())
                 .codeContent(request.getCodeContent())
                 .content(request.getContent())
@@ -77,6 +84,10 @@ public class TilService {
     public Til update(Long tilId, TilUpdateRequest request) {
         // 1) 현재 로그인 된 멤버의 ID를 가져온다.
         Member loggedInMember = memberResolver.getCurrentMember();
+
+        // 알고리즘 검증
+        Algorithm algorithm = algorithmRepository.findById(request.getAlgorithmId())
+                .orElseThrow(AlgorithmIdNotFoundException::new);
 
         // 2) tilId에 해당하는 til 엔티티를 가져온다.
         Til til = tilRepository.findById(tilId).orElseThrow(TilIdNotFoundException::new);

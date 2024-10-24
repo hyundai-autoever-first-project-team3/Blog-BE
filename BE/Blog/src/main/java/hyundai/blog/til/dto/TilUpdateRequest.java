@@ -13,9 +13,8 @@ public class TilUpdateRequest {
     private String language;
     private String thumbnailImage;
     private String site;
-    private String algorithm;
+    private Long algorithmId;
     private String title;
-    private String tag;
     private String link;
     private String codeContent;
     private String content;

@@ -24,9 +24,9 @@ public class Til {
     private String thumbnailImage;
     private String language;
     private String site;
-    private String algorithm;
+    @Column(name = "algorithm_id")
+    private Long algorithmId;
     private String title;
-    private String tag;
     private String link;
 
     @Column(name = "code_content")
@@ -43,9 +43,8 @@ public class Til {
         this.language = request.getLanguage();
         this.thumbnailImage = request.getThumbnailImage();
         this.site = request.getSite();
-        this.algorithm = request.getAlgorithm();
+        this.algorithmId = request.getAlgorithmId();
         this.title = request.getTitle();
-        this.tag = request.getTag();
         this.link = request.getLink();
         this.codeContent = request.getCodeContent();
         this.content = request.getContent();
