@@ -176,12 +176,20 @@ public class TilService {
         Algorithm algorithm = algorithmRepository.findById(til.getAlgorithmId())
                 .orElseThrow(AlgorithmIdNotFoundException::new);
 
+        Boolean isOwner = false;
+
+        if (memberResolver.isAuthenticated()) {
+            Member loggedInMember = memberResolver.getCurrentMember();
+            isOwner = loggedInMember.getId().equals(til.getMemberId());
+        }
+
         // 6) 각각의 entity 및 dto를 바탕으로 getResponse Dto 생성
         // til + comment(list) + countLikes + isLiked 를 합쳐서 dto 만들기
         TilGetResponse tilGetResponse = new TilGetResponse(til, member, commentDetailDtos,
                 algorithm,
                 countLikes,
-                isLiked);
+                isLiked,
+                isOwner);
 
         // return dto... 하기!
         return tilGetResponse;
