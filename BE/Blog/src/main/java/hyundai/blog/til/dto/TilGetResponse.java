@@ -25,13 +25,14 @@ public class TilGetResponse {
     public TilGetResponse(Til til, Member member, List<CommentDetailDto> commentDetailDtos,
             Algorithm algorithm,
             Long likeCounts,
-            boolean isLiked) {
+            boolean isLiked,
+            boolean isOwner) {
         this.til = til;
         this.algorithm = algorithm.getEngClassification();
         this.memberWriterDto = MemberWriterDto.of(member);
         this.commentDetailDtos = commentDetailDtos;
         this.commentCounts = (long) commentDetailDtos.size();
-        this.isOwner = member.getId().equals(til.getMemberId());
+        this.isOwner = isOwner;
         this.isLiked = isLiked;
         this.likeCounts = likeCounts;
     }
