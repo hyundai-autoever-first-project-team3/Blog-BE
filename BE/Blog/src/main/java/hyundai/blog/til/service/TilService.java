@@ -162,30 +162,27 @@ public class TilService {
         로그인 된 내 memberId와 해당 tilId가 LikeRepository에 존재하면 isLiked는 true 없으면 false
         */
 
-        boolean isLiked = false;
-
-        // 로그인 한 사용자라면 isLiked 값을 like repository에서 찾아서 리턴
-        if (memberResolver.isAuthenticated()) {
-            System.out.println("authenticated!");
-            Member loggedInMember = memberResolver.getCurrentMember();
-            isLiked = likeRepository.existsByMemberIdAndTilId(loggedInMember.getId(), tilId);
-        }
 
         // 로그인하지 않은 사용자라면 isLiked는 default (false) 값
 
         Algorithm algorithm = algorithmRepository.findById(til.getAlgorithmId())
                 .orElseThrow(AlgorithmIdNotFoundException::new);
 
-        Boolean isOwner = false;
+        boolean isLiked = false;
+        boolean isOwner = false;
 
-        log.info("isOwner Before : {}", isOwner);
-
+        // 로그인 한 사용자라면 isLiked 값을 like repository에서 찾아서 리턴
         if (memberResolver.isAuthenticated()) {
             Member loggedInMember = memberResolver.getCurrentMember();
             isOwner = loggedInMember.getId().equals(til.getMemberId());
+            isLiked = likeRepository.existsByMemberIdAndTilId(loggedInMember.getId(), tilId);
+            log.info("Authenticated True");
+            log.info("MemberId : {}", loggedInMember.getId());
+            log.info("Til.MemberId : {}", til.getMemberId());
+            log.info("liked : {}", isLiked);
         }
+        log.info("Authenticated False");
 
-        log.info("isOwner After : {}", isOwner);
 
 
         // 6) 각각의 entity 및 dto를 바탕으로 getResponse Dto 생성
