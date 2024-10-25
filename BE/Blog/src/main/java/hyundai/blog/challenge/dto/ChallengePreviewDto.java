@@ -8,13 +8,16 @@ import hyundai.blog.til.entity.Til;
 import java.time.LocalDateTime;
 
 public record ChallengePreviewDto(
+        Long challengeId,
         String algorithm,
         String title,
         Long views,
         LocalDateTime createdAt
 ) {
+
     public static ChallengePreviewDto of(Challenge challenge) {
         return new ChallengePreviewDto(
+                challenge.getId(),
                 challenge.getAlgorithm(),
                 challenge.getTitle(),
                 challenge.getViews(),
