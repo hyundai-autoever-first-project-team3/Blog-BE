@@ -32,6 +32,8 @@ public class Til {
     @Column(name = "code_content")
     private String codeContent;
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(name = "created_at")
