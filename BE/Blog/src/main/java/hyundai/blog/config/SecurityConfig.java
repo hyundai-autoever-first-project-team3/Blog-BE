@@ -1,7 +1,9 @@
 package hyundai.blog.config;
 
+import hyundai.blog.security.filter.JwtAuthenticationFilter;
 import hyundai.blog.security.handler.LoginSuccessHandler;
 import hyundai.blog.security.service.CustomUserDetailService;
+import hyundai.blog.util.JwtTokenProvider;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -14,9 +16,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailService oAuth2UserService;
     private final LoginSuccessHandler oAuth2SuccessHandler;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterchain(HttpSecurity http) throws Exception {
@@ -42,22 +45,45 @@ public class SecurityConfig {
                 request -> {
                     CorsConfiguration config = new CorsConfiguration();
 
+                    // 허용할 출처 설정 (모든 출처를 허용하거나 특정 도메인 추가)
                     config.setAllowedOrigins(List.of(
-                            "*",
-                            "http://localhost:5173"
+                            "http://localhost:3000",  // 로컬 개발 환경에서의 요청 허용
+                            "https://codingcare.site"  // 배포된 서버의 도메인 추가
                     ));
+
+                    // 허용할 HTTP 메서드 설정
                     config.setAllowedMethods(
                             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+
+                    // 쿠키와 자격 증명 사용을 허용
                     config.setAllowCredentials(true);
+
+                    // 허용할 헤더 설정 (모든 헤더 허용)
                     config.setAllowedHeaders(Collections.singletonList("*"));
+
+                    // 클라이언트에서 접근 가능한 헤더 설정
                     config.setExposedHeaders(
                             Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+
+                    // 프리플라이트 요청의 캐싱 시간 설정 (1시간)
                     config.setMaxAge(60 * 60L);
 
                     return config;
                 }));
 
-        //
+        // 특정 경로는 필터 적용 제외
+        http.authorizeHttpRequests(request ->
+                request.requestMatchers(
+                                new AntPathRequestMatcher("/**")    // 어떤 요청이든 인증
+                        ).permitAll()
+                        .anyRequest().authenticated()
+        );
+
+//         JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                UsernamePasswordAuthenticationFilter.class);
+
+        // OAuth2 로그인 설정
         http.oauth2Login(oauth ->
                 oauth.userInfoEndpoint(c -> c.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
@@ -65,6 +91,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-
 }

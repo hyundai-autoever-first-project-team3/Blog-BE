@@ -10,12 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class TilUpdateRequest {
-    private Long memberId;
     private String language;
+    private String thumbnailImage;
     private String site;
-    private String algorithm;
+    private Long algorithmId;
     private String title;
-    private String tag;
     private String link;
     private String codeContent;
     private String content;

@@ -1,5 +1,6 @@
 package hyundai.blog.member.entity;
 
+import hyundai.blog.member.dto.MemberUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -33,6 +34,7 @@ public class Member {
     private String profileImage;
     private String nickname;
     private String social;
+    private String intro;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
@@ -44,5 +46,11 @@ public class Member {
 
     public void addRole(MemberRole role) {
         this.memberRoleList.add(role);
+    }
+
+    public void updateNicknameAndIntro(MemberUpdateRequest request) {
+        this.nickname = request.nickname();
+        this.intro = request.intro();
+        this.updatedAt = LocalDateTime.now();
     }
 }

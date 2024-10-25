@@ -1,26 +1,35 @@
 package hyundai.blog.security.handler;
 
+import hyundai.blog.member.dto.MemberDto;
 import hyundai.blog.security.entity.OAuth2UserInfo;
 import hyundai.blog.util.JwtTokenProvider;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;  // SecurityContextHolder 추가
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    // application.yaml의 redirect-url 설정값을 주입받음
+    @Value("${app.security.redirect-url}")
+    private String redirectUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -45,15 +54,25 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtTokenProvider.generateAccessToken(claims);
         String refreshToken = jwtTokenProvider.createRefreshToken();
 
-        // 4. 헤더에 JWT 토큰 설정
-        response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("Refresh-Token", refreshToken);
+        // 4. JWT 토큰을 쿠키에 저장
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(10 * 60 * 60);
 
-        // 5. 사용자 정보 응답 바디에 포함 (선택 사항)
-        response.setContentType("application/json");
-        response.getWriter().write(String.format("{\"accessToken\": \"%s\", \"refreshToken\": \"%s\", \"email\": \"%s\", \"name\": \"%s\", \"profileImage\": \"%s\", \"social\": \"%s\", \"role\": \"%s\"}",
-                accessToken, refreshToken, userInfo.email(), userInfo.name(), userInfo.profileImage(), userInfo.social(), userInfo.role()));
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
 
-        response.getWriter().flush();
+        // 5. 응답에 쿠키 추가
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
+
+
+        // 6. application.yaml에서 주입받은 redirectUrl 사용
+        response.sendRedirect(redirectUrl);
     }
 }
