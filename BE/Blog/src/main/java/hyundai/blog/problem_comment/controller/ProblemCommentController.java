@@ -43,17 +43,4 @@ public class ProblemCommentController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/problems/{problemId}/problem_comments")
-    public ResponseEntity<?> getProblemComments(
-            @PathVariable Long problemId,
-            @RequestParam(defaultValue = "0") int page
-    ) {
-        System.out.println(problemId);
-
-        ProblemCommentsPreviewDto questionsPreviewDtos = problemCommentService.getQuestions(problemId, page);
-
-        return ResponseEntity.ok(questionsPreviewDtos);
-    }
-
-
 }
