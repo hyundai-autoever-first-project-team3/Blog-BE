@@ -60,12 +60,12 @@ public class LikeService {
     }
 
     @Transactional
-    public LikeDeleteResponse delete(LikeCreateRequest request) {
+    public LikeDeleteResponse delete(Long tilId) {
         // 1) 현재 로그인 된 멤버의 ID를 가져온다.
         Member loggedInMember = memberResolver.getCurrentMember();
 
         // 2) tilRepo에서 requestTilId에 해당하는 til 조회
-        Til til = tilRepository.findById(request.getTilId())
+        Til til = tilRepository.findById(tilId)
                 .orElseThrow(TilIdNotFoundException::new);
 
 
