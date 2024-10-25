@@ -37,5 +37,4 @@ public class TilGetResponse {
         this.likeCounts = likeCounts;
     }
 
-
 }
