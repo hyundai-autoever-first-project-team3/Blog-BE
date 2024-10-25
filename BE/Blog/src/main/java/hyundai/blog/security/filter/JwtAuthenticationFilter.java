@@ -71,6 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } else {
             log.info("Authorization 헤더에 accessToken이 없습니다.");
+            log.info("request header : {}", authorizationHeader);
         }
 
         // 필터 체인의 다음 필터로 요청을 전달
