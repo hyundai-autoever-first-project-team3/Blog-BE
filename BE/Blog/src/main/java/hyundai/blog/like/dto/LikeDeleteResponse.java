@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class LikeCreateResponse {
-//    private boolean isLiked;
+public class LikeDeleteResponse {
     private Long likeCounts;
 }

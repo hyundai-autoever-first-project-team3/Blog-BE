@@ -2,6 +2,7 @@ package hyundai.blog.like.controller;
 
 import hyundai.blog.like.dto.LikeCreateRequest;
 import hyundai.blog.like.dto.LikeCreateResponse;
+import hyundai.blog.like.dto.LikeDeleteResponse;
 import hyundai.blog.like.entity.Like;
 import hyundai.blog.like.service.LikeService;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +22,17 @@ public class LikeController {
     public ResponseEntity<?> saveLike(
             @RequestBody LikeCreateRequest request
             ) {
-        likeService.save(request);
+        LikeCreateResponse likeCreateResponse = likeService.save(request);
 
-        return ResponseEntity.ok("좋아요 저장");
+        return ResponseEntity.ok(likeCreateResponse);
     }
 
     @DeleteMapping("/like")
     public ResponseEntity<?> deleteLike(
             @RequestBody LikeCreateRequest request
     ) {
-        likeService.delete(request);
+        LikeDeleteResponse likeDeleteResponse = likeService.delete(request);
         
-        return ResponseEntity.ok("좋아요 삭제");
+        return ResponseEntity.ok(likeDeleteResponse);
     }
 }
