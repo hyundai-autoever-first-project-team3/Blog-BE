@@ -1,15 +1,14 @@
 🖼️ 블로그 프로젝트 
 ===
 
-# 🔗 배포 링크
-- 개발 중
-# 📊 협업 공간
-### [3조 협업 노션](https://profuse-aftershave-ac6.notion.site/10dfca5223ab80e893b9fd1cd4729399?v=ffffca5223ab81bf8a14000cd77d0810&pvs=4)
-
-
+# 🔗 [배포 링크](https://codingcare.site/)
+> Coding Care 배포 링크입니다.
+# 📌 [API 명세서](https://codingcare.site/api/swagger-ui/index.html)
+> API 명세서 입니다.
+# 📊 [협업 공간](https://profuse-aftershave-ac6.notion.site/10dfca5223ab80e893b9fd1cd4729399?v=ffffca5223ab81bf8a14000cd77d0810&pvs=4)
+> 노션 협업 공간입니다.
 
 # 💻 프로젝트 정보
-
 
 ## 팀원 소개
 <table>
@@ -94,3 +93,42 @@
 [//]: # (<h2>디자인</h2>)
 
 [//]: # (<img src="https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white">)
+
+# ⌨️ Sequence Diagram
+
+## Nginx Reverse Proxy 흐름도
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Nginx
+    participant Frontend as FrontPage
+    participant Backend as Backend Server
+
+    Client ->> Nginx: codingcare.site/
+    Nginx ->> Frontend: 정적 파일 요청
+    Frontend -->> Nginx: 정적 파일 반환
+    Nginx -->> Client: 정적 페이지 제공
+
+    Client ->> Nginx: codingcare.site/api
+    Nginx ->> Backend: API 요청 전달
+    Backend -->> Nginx: API 응답 반환
+    Nginx -->> Client: API 응답 전달
+
+```
+## Login 인증 Sequence
+```mermaid
+sequenceDiagram
+    participant User
+    participant WebApp as Web Application
+    participant AuthService as Auth Service
+    participant Database
+
+    User ->> WebApp: 로그인 요청
+    WebApp ->> AuthService: 자격 증명 확인 요청
+    AuthService ->> Database: 사용자 정보 조회
+    Database -->> AuthService: 사용자 정보 반환
+    AuthService -->> WebApp: 인증 결과 반환
+    WebApp -->> User: 로그인 성공/실패 알림
+```
+
+## 
