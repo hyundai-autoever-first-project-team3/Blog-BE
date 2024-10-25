@@ -18,7 +18,7 @@ public class ChatGPTRequest {
     }
 
     public static ChatGPTRequest createCodingTestPrompt(String algorithm, String model) {
-        String prompt = String.format("Please provide 3 coding test questions that fit the subject of the %s on the public platform. Each problem should have a title, difficulty (easy, medium, hard), kind, and a link to the problem. Pick one question for each level of difficulty. kind는 문제 사이트의 이름을 의미 해. Choose a random question from the sites on https://programmers.co.kr/, https://www.acmicpc.net/ . description은 주지마. Title 줄 때 따옴표는 제거해 줘, easy/medium/hard 순서대로 문제 출력해, *표시는 출력하지 않도록 한다.", algorithm);
+        String prompt = String.format("Please provide 3 coding test questions that fit the subject of the %s on the public platform. Each problem should have a title, difficulty (Easy, Medium, Hard), kind, and a link to the problem. Pick one question for each level of difficulty. kind는 문제 사이트의 이름을 의미 해. Choose a random question from the sites on https://programmers.co.kr/, https://www.acmicpc.net/ . description은 주지마. Title 줄 때 따옴표는 제거해 줘, Easy/Medium/Hard 순서대로 문제 출력해, *표시는 출력하지 않도록 한다. kind는 주소 형식으로 주지 말고 사이트 이름으로 줘 (예를 들면, 'Baekjoon' 이렇게)", algorithm);
 
         return new ChatGPTRequest(model, prompt);
     }
