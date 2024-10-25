@@ -29,7 +29,7 @@ public class LikeController {
         return ResponseEntity.ok(likeCreateResponse);
     }
 
-    @DeleteMapping("/like")
+    @DeleteMapping("/like/{tilId}")
     public ResponseEntity<?> deleteLike(
             @PathVariable Long tilId
     ) {
