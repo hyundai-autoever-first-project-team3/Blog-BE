@@ -90,30 +90,6 @@ public class ProblemCommentService {
         return ProblemCommentDeleteResponse.of(problemComment, "problem comment 삭제 완료");
     }
 
-    @Transactional
-    public ProblemCommentsPreviewDto getQuestions(Long problemId, int page) {
-        Pageable pageable = PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
-
-        // 2) 페이지 요청에 따른 모든 Question 조회
-        Page<ProblemComment> problemCommentPage = problemCommentRepository.findAll(pageable);
-
-        List<ProblemComments> problemCommentsDtos = problemCommentPage.stream()
-                .map(problemComment -> {
-                    Member member = memberRepository.findById(problemComment.getMemberId())
-                            .orElseThrow(MemberIdNotFoundException::new);
-
-                    return ProblemComments.of(member, problemComment);
-                }).toList();
-
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(ProblemIdNotFoundException::new);
-
-        Page<ProblemComments> problemCommentsList = new PageImpl<>(problemCommentsDtos, pageable,
-                problemCommentPage.getTotalElements());
-
-        return ProblemCommentsPreviewDto.of(problem, problemCommentsList);
-    }
-
     private void validateProblemIdExists(Long problemId) {
         if (!problemRepository.existsById(problemId)) {
             throw new ProblemIdNotFoundException();
