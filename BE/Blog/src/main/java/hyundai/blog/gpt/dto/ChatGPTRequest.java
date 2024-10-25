@@ -34,11 +34,12 @@ public class ChatGPTRequest {
 
 
     public static ChatGPTRequest createAIRecommendTestPrompt(TilAlgorithmDto tilAlgorithmDto, String model) {
-        String prompt = String.format("다음은 \"Algorithm 이름\"과 그에 해당하는 성공 횟수입니다. 이 데이터를 바탕으로 각 알고리즘 카테고리에서 가장 부족한 알고리즘과 관련한 알고리즘 문제 사이트를 추천해 주세요." +
-                "Please provide 1 coding test questions that fit the subject of the %s on the public platform. Each problem should have a title, kind, and a link to the problem." +
-                "Choose a random question from the sites on https://programmers.co.kr/or https://www.acmicpc.net/" +
-                "Title, kind, Link이 값 빼고 나머지 출력 값은 제거해 줘." +
-                "* 표시도 제거해 줘", tilAlgorithmDto.toString());
+        String prompt = String.format("Algorithm 이름과 성공 횟수 데이터를 바탕으로 각 알고리즘 카테고리에서 부족한 알고리즘 관련 문제를 추천해 주세요. " +
+                "%s 주제에 맞는 코딩 테스트 문제를 공개 플랫폼에서 1개 추천해 주세요. 문제는 제목, 사이트 종류, 링크만 제공해 주세요. " +
+                "프로그래머스(https://programmers.co.kr/) 또는 백준(https://www.acmicpc.net/)에서 임의의 문제를 선택해 주세요. " +
+                "Title, Kind, Link 외에는 모든 출력값을 제거해 주세요. " +
+                "* 표시도 제거해 주세요.", tilAlgorithmDto.toString());
+
 
         return new ChatGPTRequest(model, prompt);
     }
