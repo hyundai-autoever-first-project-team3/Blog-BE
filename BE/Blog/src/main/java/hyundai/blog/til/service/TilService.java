@@ -178,10 +178,15 @@ public class TilService {
 
         Boolean isOwner = false;
 
+        log.info("isOwner Before : {}", isOwner);
+
         if (memberResolver.isAuthenticated()) {
             Member loggedInMember = memberResolver.getCurrentMember();
             isOwner = loggedInMember.getId().equals(til.getMemberId());
         }
+
+        log.info("isOwner After : {}", isOwner);
+
 
         // 6) 각각의 entity 및 dto를 바탕으로 getResponse Dto 생성
         // til + comment(list) + countLikes + isLiked 를 합쳐서 dto 만들기
