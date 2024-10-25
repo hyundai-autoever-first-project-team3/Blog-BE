@@ -36,7 +36,8 @@ public class ProblemService {
         Pageable pageable = PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         // 2) 페이지 요청에 따른 모든 Question 조회
-        Page<ProblemComment> problemCommentPage = problemCommentRepository.findAll(pageable);
+        Page<ProblemComment> problemCommentPage = problemCommentRepository.findAllByProblemId(
+                problemId, pageable);
 
         List<ProblemComments> problemCommentsDtos = problemCommentPage.stream()
                 .map(problemComment -> {

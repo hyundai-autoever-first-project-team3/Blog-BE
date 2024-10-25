@@ -7,5 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProblemCommentRepository extends JpaRepository<ProblemComment, Long> {
-    Page<ProblemComment> findAll(Pageable pageable);
+
+    Page<ProblemComment> findAllByProblemId(Long problemId, Pageable pageable);
 }
