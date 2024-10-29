@@ -53,4 +53,8 @@ public class Member {
         this.intro = request.intro();
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }
