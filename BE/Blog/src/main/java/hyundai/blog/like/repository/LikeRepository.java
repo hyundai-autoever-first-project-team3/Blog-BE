@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
+
     // 특정 TIL과 사용자에 대한 좋아요를 조회하는 쿼리 메서드
     Optional<Like> findByMemberAndTil(Member member, Til til);
 
@@ -24,5 +25,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     // 특정 회원의 좋아요한 TIL 리스트를 ID 내림차순으로 조회
     Page<Like> findByMember(Member member, Pageable pageable);
+
+    void deleteAllByTil(Til til);
 
 }

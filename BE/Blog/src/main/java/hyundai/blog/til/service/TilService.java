@@ -117,6 +117,9 @@ public class TilService {
         // 3) til 작성자와 로그인한 사용자에 대한 검증
         validateTilOwnerShip(til, loggedInMember);
 
+        // * til id에 해당하는 모든 like를 삭제
+        likeRepository.deleteAllByTil(til);
+
         // 4) til entity를 db에서 삭제
         tilRepository.delete(til);
 
@@ -162,7 +165,6 @@ public class TilService {
         로그인 된 내 memberId와 해당 tilId가 LikeRepository에 존재하면 isLiked는 true 없으면 false
         */
 
-
         // 로그인하지 않은 사용자라면 isLiked는 default (false) 값
 
         Algorithm algorithm = algorithmRepository.findById(til.getAlgorithmId())
@@ -182,8 +184,6 @@ public class TilService {
             log.info("liked : {}", isLiked);
         }
         log.info("Authenticated False");
-
-
 
         // 6) 각각의 entity 및 dto를 바탕으로 getResponse Dto 생성
         // til + comment(list) + countLikes + isLiked 를 합쳐서 dto 만들기
