@@ -1,5 +1,6 @@
 package hyundai.blog.member.controller;
 
+import hyundai.blog.member.dto.MemberProfileUpdateRequest;
 import hyundai.blog.member.dto.MemberUpdateRequest;
 import hyundai.blog.member.entity.Member;
 import hyundai.blog.member.service.MemberService;
@@ -28,6 +29,15 @@ public class MemberController {
             @RequestBody MemberUpdateRequest request
     ) {
         Member member = memberService.updateMemberInfo(request);
+
+        return ResponseEntity.ok(member);
+    }
+
+    @PatchMapping("/member/profile")
+    public ResponseEntity<?> updateMemberProfile(
+            @RequestBody MemberProfileUpdateRequest request
+    ) {
+        Member member = memberService.updateMemberProfile(request);
 
         return ResponseEntity.ok(member);
     }

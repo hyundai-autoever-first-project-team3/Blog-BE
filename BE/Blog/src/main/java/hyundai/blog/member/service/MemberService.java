@@ -1,5 +1,6 @@
 package hyundai.blog.member.service;
 
+import hyundai.blog.member.dto.MemberProfileUpdateRequest;
 import hyundai.blog.member.dto.MemberUpdateRequest;
 import hyundai.blog.member.entity.Member;
 import hyundai.blog.util.MemberResolver;
@@ -24,6 +25,15 @@ public class MemberService {
         Member member = memberResolver.getCurrentMember();
 
         member.updateNicknameAndIntro(request);
+
+        return member;
+    }
+
+    @Transactional
+    public Member updateMemberProfile(MemberProfileUpdateRequest request) {
+        Member member = memberResolver.getCurrentMember();
+
+        member.updateProfileImage(request.profileImage());
 
         return member;
     }

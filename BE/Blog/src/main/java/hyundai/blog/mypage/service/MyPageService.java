@@ -214,6 +214,8 @@ public class MyPageService {
 
         String message = recommendResponse.getMessage();
 
+        System.out.println(message);
+
         // 메시지를 파싱하여 정보 추출
         String[] lines = message.split("\n");
 
