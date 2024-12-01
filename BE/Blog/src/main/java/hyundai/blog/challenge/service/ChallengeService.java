@@ -43,7 +43,7 @@ public class ChallengeService {
     @Transactional
     public void createChallenge() {
         // 1) 알고리즘 DB에서 오래된 순으로 정렬 후, 제일 오래된 값을 가져온다.
-        Algorithm algorithm = algorithmRepository.findFirstByOrderByUsedAtDesc();
+        Algorithm algorithm = algorithmRepository.findFirstByOrderByUsedAtAsc();
 
         // 2) ChatGPT API 요청 생성 ( algorithm + model )
         ChatGPTRequest request = ChatGPTRequest.createCodingTestPrompt(
