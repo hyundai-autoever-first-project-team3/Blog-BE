@@ -12,6 +12,7 @@ import hyundai.blog.gpt.dto.ChallengeTilGPTDto;
 import hyundai.blog.gpt.dto.ChatGPTRequest;
 import hyundai.blog.gpt.dto.ChatGPTResponse;
 import jakarta.transaction.Transactional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,53 +43,44 @@ public class ChallengeService {
 
     @Transactional
     public void createChallenge() {
-        // 1) 알고리즘 DB에서 오래된 순으로 정렬 후, 제일 오래된 값을 가져온다.
         Algorithm algorithm = algorithmRepository.findFirstByOrderByUsedAtAsc();
+        if (algorithm == null) {
+            throw new IllegalStateException("No algorithm available to create a challenge.");
+        }
 
-        // 2) ChatGPT API 요청 생성 ( algorithm + model )
         ChatGPTRequest request = ChatGPTRequest.createCodingTestPrompt(
                 algorithm.getEngClassification(), model);
-
-        // 3) ChatGPT API 호출하여 응답 받기
         ChatGPTResponse chatGPTResponse = template.postForObject(apiURL, request,
                 ChatGPTResponse.class);
 
-        // 4) algorithm userAt 업데이트
+        if (chatGPTResponse == null || chatGPTResponse.extractCodingTestProblems().isEmpty()) {
+            throw new IllegalStateException("ChatGPT response is invalid or contains no problems.");
+        }
+
         algorithm.updateUsedAt();
 
-        // 5) Challenge entity
         Challenge challenge = Challenge.builder()
                 .title(String.format("%s 알고리즘", algorithm.getEngClassification()))
                 .createdAt(LocalDateTime.now())
                 .algorithm(algorithm.getEngClassification())
                 .views(0L)
                 .build();
-
-        // 6) Challenge entity를 save
         Challenge savedChallenge = challengeRepository.save(challenge);
 
-        // 6) 3개의 ChallengeTil을 만들어야 해.
-        // -> choice를 가지고, 3개의 뭔가를 만들어야 해
-        // -> ChallengeTilGPTDto
-        List<ChallengeTilGPTDto> problems = chatGPTResponse.extractCodingTestProblems();
+        List<Problem> problemsToSave = chatGPTResponse.extractCodingTestProblems().stream()
+                .map(problem -> Problem.builder()
+                        .title(problem.getTitle())
+                        .challengeId(savedChallenge.getId())
+                        .level(problem.getLevel())
+                        .site(problem.getSite())
+                        .siteKinds(problem.getSiteKinds())
+                        .createdAt(LocalDateTime.now())
+                        .build())
+                .collect(Collectors.toList());
 
-        for (ChallengeTilGPTDto problem : problems) {
-
-            // 7) Challenge Til entity 를 만들어줬다.
-            Problem challengeTil = Problem.builder()
-                    .title(problem.getTitle())
-                    .challengeId(savedChallenge.getId())
-                    .level(problem.getLevel())
-                    .site(problem.getSite())
-                    .siteKinds(problem.getSiteKinds())
-                    .createdAt(LocalDateTime.now())
-                    .build();
-
-            // 8) challenge til repository에 저장
-            problemRepository.save(challengeTil);
-        }
-
+        problemRepository.saveAll(problemsToSave);
     }
+
 
     // 매일 정각에 createChallenge 실행
     @Scheduled(cron = "0 0 0 * * *")
