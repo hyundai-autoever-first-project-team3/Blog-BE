@@ -41,11 +41,6 @@ public class MyPageService {
 
     private static final int SIZE = 10;
 
-    @Value("${openai.model}")
-    private String model;
-
-    @Value("${openai.api.url}")
-    private String apiURL;
 
     private final RestTemplate template;
 
@@ -205,30 +200,32 @@ public class MyPageService {
 //        ChatGPTResponse analysisResponse = template.postForObject(apiURL, analysisRequest, ChatGPTResponse.class);
 
 //        return analysisResponse.getMessage();
-        return "현재 DFS 알고리즘 분야의 학습이 부족합니다. 백준의 순열 사이클을 추천드립니다. 링크 : https://www.acmicpc.net/problem/10451";
+        return "현재 DFS 알고리즘 분야의 학습이 부족합니다. 앞으로 DFS, BFS 학습이 필요합니다.";
     }
 
     private AIRecommendDto getRecommendResult(TilAlgorithmDto tilAlgorithmDto) {
-        ChatGPTRequest recommendRequest = ChatGPTRequest.createAIRecommendTestPrompt(tilAlgorithmDto, model);
-
-        ChatGPTResponse recommendResponse = template.postForObject(apiURL, recommendRequest, ChatGPTResponse.class);
-
-        String message = recommendResponse.getMessage();
-
-        System.out.println(message);
-
-        // 메시지를 파싱하여 정보 추출
-        String[] lines = message.split("\n");
-
-        String title = lines[0].replace("Title: ", "").trim();
-        String siteKinds = lines[1].replace("Kind: ", "").trim();
-        String site = lines[2].replace("Link: ", "").trim();
+//        ChatGPTRequest recommendRequest = ChatGPTRequest.createAIRecommendTestPrompt(tilAlgorithmDto, model);
+//
+//        ChatGPTResponse recommendResponse = template.postForObject(apiURL, recommendRequest, ChatGPTResponse.class);
+//
+//        String message = recommendResponse.getMessage();
+//
+//        System.out.println(message);
+//
+//        // 메시지를 파싱하여 정보 추출
+//        String[] lines = message.split("\n");
+//
+//        String title = lines[0].replace("Title: ", "").trim();
+//        String siteKinds = lines[1].replace("Kind: ", "").trim();
+//        String site = lines[2].replace("Link: ", "").trim();
 
         // AIRecommendDto 객체 생성 후 값 설정
         AIRecommendDto aiRecommendDto = new AIRecommendDto();
-        aiRecommendDto.setTitle(title);
-        aiRecommendDto.setSiteKinds(siteKinds);
-        aiRecommendDto.setSite(site);
+        aiRecommendDto.setTitle("순열 사이클");
+        aiRecommendDto.setSiteKinds("백준");
+        aiRecommendDto.setSite("https://www.acmicpc.net/problem/10451");
+
+
 
         return aiRecommendDto;
     }
