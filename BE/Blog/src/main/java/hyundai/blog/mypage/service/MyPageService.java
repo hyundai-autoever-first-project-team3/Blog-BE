@@ -198,13 +198,14 @@ public class MyPageService {
     }
 
     private String getAnalysisResult(TilAlgorithmDto tilAlgorithmDto) {
-        // ChatGPT ai 분석 리퀘스트 생성
-        ChatGPTRequest analysisRequest = ChatGPTRequest.createAIAnaliztionTestPrompt(tilAlgorithmDto, model);
+//        // ChatGPT ai 분석 리퀘스트 생성
+//        ChatGPTRequest analysisRequest = ChatGPTRequest.createAIAnaliztionTestPrompt(tilAlgorithmDto, model);
+//
+//        // ChatGPT ai 분석
+//        ChatGPTResponse analysisResponse = template.postForObject(apiURL, analysisRequest, ChatGPTResponse.class);
 
-        // ChatGPT ai 분석
-        ChatGPTResponse analysisResponse = template.postForObject(apiURL, analysisRequest, ChatGPTResponse.class);
-
-        return analysisResponse.getMessage();
+//        return analysisResponse.getMessage();
+        return "현재 DFS 알고리즘 분야의 학습이 부족합니다. 백준의 순열 사이클을 추천드립니다. 링크 : https://www.acmicpc.net/problem/10451";
     }
 
     private AIRecommendDto getRecommendResult(TilAlgorithmDto tilAlgorithmDto) {
