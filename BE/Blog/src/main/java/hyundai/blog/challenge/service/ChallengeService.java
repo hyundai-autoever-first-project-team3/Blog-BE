@@ -68,8 +68,6 @@ public class ChallengeService {
         Challenge savedChallenge = challengeRepository.save(challenge);
 
         // 6) 3개의 ChallengeTil을 만들어야 해.
-        // -> choice를 가지고, 3개의 뭔가를 만들어야 해
-        // -> ChallengeTilGPTDto
         List<ChallengeTilGPTDto> problems = chatGPTResponse.extractCodingTestProblems();
 
         for (ChallengeTilGPTDto problem : problems) {
